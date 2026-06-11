@@ -1,0 +1,73 @@
+{
+	"name": "astro-scute",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": "Gus",
+	"description": "",
+	"homepage": "https://github.com/thegu5/astro-scute",
+	"bugs": {
+		"url": "https://github.com/thegu5/astro-scute/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/thegu5/astro-scute.git"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			}
+		},
+		"./package.json": "./package.json"
+	},
+	"bin": {
+		"scute": "dist/cli.js"
+	},
+	"files": [
+		"dist",
+		"src",
+		"LICENSE",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsdown --watch",
+		"test": "node --test"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "^11.1.2",
+			"onFail": "download"
+		}
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.16",
+		"@standard-schema/spec": "^1.1.0",
+		"@types/node": "^25.9.2",
+		"tsdown": "^0.22.2",
+		"typescript": "^6.0.3"
+	},
+	"dependencies": {
+		"@atcute/atproto": "^4.0.2",
+		"@atcute/client": "^5.0.0",
+		"@atcute/identity-resolver": "^2.0.0",
+		"@atcute/lexicons": "^2.0.0",
+		"@atcute/oauth-node-client": "^2.0.0",
+		"@atcute/standard-site": "^2.0.1",
+		"@bomb.sh/args": "^0.3.1",
+		"@clack/prompts": "^1.5.1",
+		"devalue": "^5.8.1",
+		"env-paths": "^4.0.0",
+		"get-port-please": "^3.2.0"
+	},
+	"peerDependencies": {
+		"astro": "^7.0.0-beta.3"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	}
+}
