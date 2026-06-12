@@ -3,7 +3,14 @@
 	"version": "0.0.1",
 	"license": "MIT",
 	"author": "Gus",
-	"description": "",
+	"description": "Simple and cute Standard.site integration for Astro",
+	"keywords": [
+		"astro-integration",
+		"astro-component",
+		"atproto",
+		"standard.site",
+		"tooling"
+	],
 	"homepage": "https://github.com/thegu5/astro-scute",
 	"bugs": {
 		"url": "https://github.com/thegu5/astro-scute/issues"
