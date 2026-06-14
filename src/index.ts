@@ -1,38 +1,60 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
 import type { ScuteConfig } from "./types.ts";
+import { buildPublicationUri, getConfig } from "./util.ts";
 
 export function defineConfig(options: ScuteConfig): ScuteConfig {
 	return options;
 }
 
-
-// TODO: inject .well-known routes and link tags
-const createPlugin = (options?: object): AstroIntegration => {
+const createPlugin = (_options?: object): AstroIntegration => {
 	return {
 		name: "astro-scute",
 		hooks: {
 			"astro:config:setup": async ({
-				config,
 				addWatchFile,
-				injectRoute,
+				addMiddleware,
 				updateConfig,
 			}) => {
-				addWatchFile("./scute.config.ts");
+				// atcute has some invalid PURE annotations
 				updateConfig({
 					vite: {
-						plugins: [
-							{
-								name: "astro-scute",
-								transformIndexHtml(html, ctx) {
-									return [];
+						build: {
+							rolldownOptions: {
+								checks: {
+									invalidAnnotation: false,
 								},
 							},
-						],
+						},
 					},
 				});
+
+				addWatchFile("./scute.config.ts");
+
+				addMiddleware({
+					entrypoint: join(import.meta.dirname, "./middleware.js"),
+					order: "pre",
+				});
 			},
-			"astro:config:done": async ({ config }) => {},
-			"astro:build:done": async ({ dir, pages, logger }) => {},
+			"astro:build:done": async ({ dir }) => {
+				const scuteConfig = await getConfig();
+
+				for (const publication of scuteConfig.publications) {
+					const outFile = fileURLToPath(
+						new URL(
+							`./.well-known/site.standard.publication${new URL(publication.record.url).pathname.replace(/\/$/, "")}`,
+							dir,
+						),
+					);
+					mkdirSync(dirname(outFile), { recursive: true });
+					writeFileSync(
+						outFile,
+						buildPublicationUri(scuteConfig.identity, publication),
+					);
+				}
+			},
 		},
 	};
 };

@@ -10,7 +10,7 @@ import {
 	WebDidDocumentResolver,
 	WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
-import { type ActorIdentifier, isDid } from "@atcute/lexicons/syntax";
+import { type ActorIdentifier, type Did, isDid } from "@atcute/lexicons/syntax";
 import type { Store } from "@atcute/oauth-node-client";
 import {
 	MemoryStore,
@@ -19,13 +19,11 @@ import {
 	type StoredState,
 } from "@atcute/oauth-node-client";
 import { cancel, isCancel, log, spinner } from "@clack/prompts";
-import { dev } from "astro";
-import { validateConfig } from "astro/config";
 import type { DataEntry } from "astro/content/config";
 import * as devalue from "devalue";
 import envPaths from "env-paths";
 import { getRandomPort } from "get-port-please";
-import type { ScuteConfig } from "./types.ts";
+import type { PublicationConfig, ScuteConfig } from "./types.ts";
 
 export const hexToRGB = (hex: string) => {
 	let parseString = hex;
@@ -74,6 +72,7 @@ export async function getDataStore(): Promise<
 		// await build({ root: process.cwd(), logLevel: "error" }, { devOutput: true });
 		// also, vite dumps extra stuff into stdout which is annoying
 		// also, would be nice if there was an api to check if the store was up to date :pensive:
+		const { dev } = await import("astro")
 		const devServer = await dev({
 			root: process.cwd(),
 			logLevel: "error",
@@ -88,6 +87,8 @@ export async function getDataStore(): Promise<
 }
 
 export async function getAstroConfig() {
+	const { validateConfig } = await import("astro/config");
+
 	// todo different file extensions
 	const module = await import(join(process.cwd(), "astro.config.ts"));
 	return validateConfig(module.default, process.cwd(), "build"); // uhhhh
@@ -216,4 +217,8 @@ export function cancelIfNeeded<T>(val: T | symbol): asserts val is T {
 		cancel("Operation cancelled.");
 		process.exit(1);
 	}
+}
+
+export function buildPublicationUri(identity: Did, publication: PublicationConfig): `${string}:${string}` {
+	return `at://${identity}/site.standard.publication/scute-${publication.collectionName}`
 }
