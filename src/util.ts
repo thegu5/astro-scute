@@ -65,7 +65,7 @@ type LockFileData = {
 	url: string;
 	background: boolean;
 	startedAt: string;
-}
+};
 
 export async function getDataStore(): Promise<
 	Map<string, Map<string, DataEntry>>
@@ -73,9 +73,9 @@ export async function getDataStore(): Promise<
 	let devLock: LockFileData | null = null;
 	try {
 		devLock = JSON.parse(
-		readFileSync(join(process.cwd(), ".astro/dev.json"), "utf-8"),
-	);
-	} catch {};
+			readFileSync(join(process.cwd(), ".astro/dev.json"), "utf-8"),
+		);
+	} catch {}
 	if (!devLock || !pidIsRunning(devLock.pid)) {
 		const spin = spinner();
 		spin.start("Building your site");
@@ -83,7 +83,7 @@ export async function getDataStore(): Promise<
 		// await build({ root: process.cwd(), logLevel: "error" }, { devOutput: true });
 		// also, vite dumps extra stuff into stdout which is annoying
 		// also, would be nice if there was an api to check if the store was up to date :pensive:
-		const { dev } = await import("astro")
+		const { dev } = await import("astro");
 		const devServer = await dev({
 			root: process.cwd(),
 			logLevel: "error",
@@ -230,6 +230,9 @@ export function cancelIfNeeded<T>(val: T | symbol): asserts val is T {
 	}
 }
 
-export function buildPublicationUri(identity: Did, publication: PublicationConfig): `${string}:${string}` {
-	return `at://${identity}/site.standard.publication/scute-${publication.collectionName}`
+export function buildPublicationUri(
+	identity: Did,
+	publication: PublicationConfig,
+): `${string}:${string}` {
+	return `at://${identity}/site.standard.publication/scute-${publication.collectionName}`;
 }

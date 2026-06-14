@@ -123,11 +123,11 @@ export async function init() {
 				options: [
 					{
 						value: pubUrl,
-						label: pubUrl.toString()
+						label: pubUrl.toString(),
 					},
 					{
 						value: listingUrl,
-						label: listingUrl.toString()
+						label: listingUrl.toString(),
 					},
 				],
 			});

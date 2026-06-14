@@ -253,8 +253,8 @@ export async function publish() {
 	}
 
 	if (queuedOperations.length === 0) {
-		outro("Everything's already up to date!")
-		process.exit(0)
+		outro("Everything's already up to date!");
+		process.exit(0);
 	}
 
 	// summary of queued ops
