@@ -59,13 +59,24 @@ export function pidIsRunning(pid: number) {
 	}
 }
 
+type LockFileData = {
+	pid: number;
+	port: number;
+	url: string;
+	background: boolean;
+	startedAt: string;
+}
+
 export async function getDataStore(): Promise<
 	Map<string, Map<string, DataEntry>>
 > {
-	const devLock = JSON.parse(
+	let devLock: LockFileData | null = null;
+	try {
+		devLock = JSON.parse(
 		readFileSync(join(process.cwd(), ".astro/dev.json"), "utf-8"),
 	);
-	if (!pidIsRunning(devLock.pid)) {
+	} catch {};
+	if (!devLock || !pidIsRunning(devLock.pid)) {
 		const spin = spinner();
 		spin.start("Building your site");
 		// ideally we'd use devOutput, but that doesn't generate data-store.json for some reason
