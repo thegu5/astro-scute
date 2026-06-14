@@ -20,7 +20,7 @@ todo (+asciinema recording)
 
 ## Features
 - [x] publishing/syncing records
-- [ ] automatic `.well-known` and `<link>` metadata injection
+- [x] automatic `.well-known` and `<link>` metadata injection
 - [ ] Standard.site subscribe & recommend button components
 - [ ] BlueSky comments component
   - [ ] tie to `bskyPostRef` 
