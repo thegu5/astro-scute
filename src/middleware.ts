@@ -26,7 +26,8 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 			return new Response(renderSync(ast), response);
 		} else if (
 			reqPath.startsWith(contentBasePath) &&
-			!(reqPath === contentBasePath)
+			!(reqPath === contentBasePath) &&
+			Object.entries(ctx.props).length > 0
 		) {
 			// assume it's a document? todo look for alternatives
 			const response = await next();
