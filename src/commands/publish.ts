@@ -24,10 +24,11 @@ import {
 	SiteStandardPublication,
 } from "@atcute/standard-site";
 import { cancel, confirm, log, outro, spinner } from "@clack/prompts";
+import type { DataEntry } from "astro/content/config";
 import {
+	buildPublicationUri,
 	cancelIfNeeded,
 	createOAuthSession,
-	getAstroConfig,
 	getConfig,
 	getDataStore,
 } from "../util.ts";
@@ -65,10 +66,31 @@ async function listRecords<
 	);
 }
 
+// todo: better documentation for what frontmatter data astro-scute uses
+function makeSiteStandardDocument(
+	entry: DataEntry,
+	baseContentPath: string | undefined,
+	pubUri: string,
+) {
+	const publishedAtSrc = entry.data.pubDate ?? entry.data.publishedAt;
+	const publishedAt =
+		publishedAtSrc instanceof Date
+			? publishedAtSrc.toISOString()
+			: (publishedAtSrc as string);
+
+	return {
+		$type: "site.standard.document",
+		// would be _real nice_ to have astro:content typing here !!
+		title: entry.data.title as string,
+		site: pubUri as `${string}:${string}`,
+		publishedAt,
+		path: `${baseContentPath ?? ""}/${entry.id}`,
+		// TODO: CONTENT, ETC
+	} satisfies InferOutput<typeof SiteStandardDocument.mainSchema>;
+}
+
 export async function publish() {
 	const scuteConfig = await getConfig();
-
-	const astroConfig = await getAstroConfig();
 
 	const dataStore = await getDataStore();
 
@@ -133,7 +155,7 @@ export async function publish() {
 
 	// make sure site.standard.document records are up to date
 	for (const publication of scuteConfig.publications) {
-		const pubUri: `${string}:${string}` = `at://${scuteConfig.identity}/site.standard.publication/scute-${publication.collectionName}`;
+		const pubUri = buildPublicationUri(scuteConfig.identity, publication);
 
 		const publishedDocumentRkeys = new Set(
 			documentRecords
@@ -173,13 +195,13 @@ export async function publish() {
 				cancel("Something has gone wrong...");
 				process.exit(1);
 			}
-			const publishedAtSrc = entry.data.pubDate ?? entry.data.publishedAt;
-			const publishedAt =
-				publishedAtSrc instanceof Date
-					? publishedAtSrc.toISOString()
-					: (publishedAtSrc as string);
-			
-			// todo don't duplicate logic
+
+			const record = makeSiteStandardDocument(
+				entry,
+				publication.baseContentPath,
+				pubUri,
+			);
+
 			queuedOperations.push({
 				type: ComAtprotoRepoCreateRecord,
 				init: {
@@ -187,15 +209,7 @@ export async function publish() {
 						collection: "site.standard.document",
 						repo: scuteConfig.identity,
 						rkey,
-						record: {
-							$type: "site.standard.document",
-							// would be _real nice_ to have astro:content typing here !!
-							title: entry.data.title as string,
-							site: pubUri,
-							publishedAt,
-							path: `${publication.baseContentPath}/${entry.id}`,
-							// TODO: CONTENT, ETC
-						} satisfies InferOutput<typeof SiteStandardDocument.mainSchema>,
+						record,
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
 			});
@@ -212,21 +226,12 @@ export async function publish() {
 				cancel("Something has gone wrong...");
 				process.exit(1);
 			}
-			const publishedAtSrc = entry.data.pubDate ?? entry.data.publishedAt;
-			const publishedAt =
-				publishedAtSrc instanceof Date
-					? publishedAtSrc.toISOString()
-					: (publishedAtSrc as string);
 
-			const newDocument = {
-				$type: "site.standard.document",
-				// would be _real nice_ to have astro:content typing here !!
-				title: entry.data.title as string,
-				site: pubUri,
-				publishedAt,
-				path: `${publication.baseContentPath}/${entry.id}`,
-				// TODO: CONTENT, ETC
-			} satisfies InferOutput<typeof SiteStandardDocument.mainSchema>;
+			const newDocument = makeSiteStandardDocument(
+				entry,
+				publication.baseContentPath,
+				pubUri,
+			);
 
 			// are they identical? if so, skip
 			if (isDeepStrictEqual(documentRecords.get(rkey), newDocument)) {
