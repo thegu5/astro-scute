@@ -110,10 +110,9 @@ export async function init() {
 		});
 		cancelIfNeeded(name);
 
-		let pubUrl: string = new URL(astroConfig.base, astroConfig.site).toString();
-		console.log(pubUrl);
+		let pubUrl: URL = new URL(astroConfig.base, astroConfig.site);
 
-		const listingUrl = join(pubUrl, contentPath);
+		const listingUrl = new URL(`./${contentPath}`, pubUrl);
 
 		if (
 			existsSync(`src/pages/${contentPath}.astro`) ||
@@ -124,9 +123,11 @@ export async function init() {
 				options: [
 					{
 						value: pubUrl,
+						label: pubUrl.toString()
 					},
 					{
 						value: listingUrl,
+						label: listingUrl.toString()
 					},
 				],
 			});
@@ -138,9 +139,7 @@ export async function init() {
 			collectionName,
 			record: {
 				name,
-				url: (pubUrl.endsWith("/")
-					? pubUrl.slice(0, -1)
-					: pubUrl) as `${string}:${string}`,
+				url: pubUrl.toString().replace(/\/$/, "") as `${string}:${string}`,
 				description: "A description! (optional)",
 				$type: "site.standard.publication",
 				preferences: {
