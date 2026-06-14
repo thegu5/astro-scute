@@ -9,9 +9,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 	const reqPath = new URL(ctx.request.url).pathname;
 
 	for (const publication of scuteConfig.publications) {
-		const pubPath = new URL(
-			`${publication.record.url}${publication.baseContentPath ?? ""}/`,
-		).pathname;
+		const pubPath = new URL(`${publication.record.url}/`).pathname;
+
+		const contentBasePath = `${pubPath.slice(0, -1)}${publication.baseContentPath ?? ""}/`;
 
 		if (reqPath === pubPath) {
 			const response = await next();
@@ -24,7 +24,10 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 			);
 
 			return new Response(renderSync(ast), response);
-		} else if (reqPath.startsWith(pubPath)) {
+		} else if (
+			reqPath.startsWith(contentBasePath) &&
+			!(reqPath === contentBasePath)
+		) {
 			// assume it's a document? todo look for alternatives
 			const response = await next();
 			const ast = parse(await response.text());
