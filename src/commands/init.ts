@@ -62,7 +62,7 @@ export async function init() {
 			spin.stop("Handle resolved");
 		} catch (e) {
 			spin.error((e as Error).message);
-			process.exit(0);
+			process.exit(1);
 		}
 	} else {
 		// TODO: is this necessary? (and if so, also resolve did returned from handleResolver)
