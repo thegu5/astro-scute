@@ -1,5 +1,6 @@
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
 	type ActorIdentifier,
 	isActorIdentifier,
@@ -94,15 +95,19 @@ export async function init() {
 		log.message(
 			`Now configuring publication for "${collectionName}" collection`,
 		);
+
+		const srcDir = fileURLToPath(astroConfig.srcDir)
+			.replace(`${process.cwd()}/`, "")
+			.slice(0, -1);
+
 		let contentPath = await path({
 			message:
 				"Where does this collection appear on your site? (the part before the slug)",
-			// todo srcDir support
-			root: `src/pages/`,
+			root: `${srcDir}/pages/`,
 			directory: true,
 		});
 		cancelIfNeeded(contentPath);
-		contentPath = contentPath.replace("src/pages/", "");
+		contentPath = contentPath.replace(`${srcDir}/pages/`, "");
 
 		const name = await text({
 			message: "What is this publication's name?",
@@ -115,8 +120,8 @@ export async function init() {
 		const listingUrl = new URL(`./${contentPath}`, pubUrl);
 
 		if (
-			existsSync(`src/pages/${contentPath}.astro`) ||
-			existsSync(`src/pages/${contentPath}.ts`)
+			existsSync(`${srcDir}/pages/${contentPath}.astro`) ||
+			existsSync(`${srcDir}/pages/${contentPath}.ts`)
 		) {
 			const res = await select({
 				message: "What should this publication's home page be?",
