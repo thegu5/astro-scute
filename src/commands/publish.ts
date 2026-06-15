@@ -272,7 +272,7 @@ export async function publish() {
 		}
 		if (op.type === ComAtprotoRepoDeleteRecord) {
 			log.warning(
-				`creating ${(op.init as CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>).input.rkey}`,
+				`deleting ${(op.init as CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>).input.rkey}`,
 			);
 		}
 	});
