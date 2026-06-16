@@ -43,13 +43,6 @@
 		"dev": "tsdown --watch",
 		"test": "node --test"
 	},
-	"devEngines": {
-		"packageManager": {
-			"name": "pnpm",
-			"version": "^11.6.0",
-			"onFail": "download"
-		}
-	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
 		"@standard-schema/spec": "^1.1.0",
