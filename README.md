@@ -1,11 +1,10 @@
 
 > [!WARNING]
-> This package isn't ready for use yet (not published), and isn't [spec-compliant](https://tangled.org/standard.site/lexicons/issues/7).
-
+> This package isn't fully ready for use yet, as it isn't [spec-compliant](https://tangled.org/standard.site/lexicons/issues/7).
 
 # astro-scute
 
-astro-scute is an Astro integration that makes it easy to publish [standard.site](https://standard.site) records for your content collections, with minimal configuration and no scripting.
+astro-scute is an Astro integration that makes it easy to publish [Standard.site](https://standard.site) records for your content collections, with minimal configuration and no scripting.
 
 ## Getting Started
 First, install and add the integration:
@@ -16,12 +15,19 @@ Then run the init command, which will walk you through setting up a `scute.confi
 
 `pnpm scute init`
 
-todo (+asciinema recording)
+That's it, you're all set up! Your site now has the necessary metadata, and running `pnpm scute publish` will sync the Standard.site records to your PDS.
 
-## Features
+(insert asciinema recording here)
+
+## Features / TODOs
 - [x] publishing/syncing records
 - [x] automatic `.well-known` and `<link>` metadata injection
-- [ ] Standard.site subscribe & recommend button components
-- [ ] BlueSky comments component
-  - [ ] tie to `bskyPostRef` 
+- [ ] app password support (especially helpful for CI)
+- [ ] be spec-compliant
+- [ ] store content within Standard.site records
+  - [ ] [markpub](https://markpub.at)
+  - [ ] some HTML lexicon
+- [ ] subscribe & recommend button components
+- [ ] Bluesky comments component
+  - [ ] tie to `bskyPostRef` ?
 - [ ] content loader (out of scope?)

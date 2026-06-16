@@ -170,7 +170,7 @@ export async function publish() {
 		);
 
 		// these documents exist on the user's PDS, tied to a scute-managed publication, but no longer exist in the content collection
-		// so, we delete them (after confirmation..? todo)
+		// so, we delete them
 		publishedDocumentRkeys.difference(localDocumentRkeys).forEach((rkey) => {
 			queuedOperations.push({
 				type: ComAtprotoRepoDeleteRecord,
