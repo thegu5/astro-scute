@@ -2,11 +2,6 @@
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
 		"skipLibCheck": true,
-		"types": [
-			"node",
-			"@atcute/standard-site",
-			"@atcute/atproto",
-			"@standard-schema/spec"
-		]
+		"types": ["node", "@atcute/standard-site", "@atcute/atproto"]
 	}
 }

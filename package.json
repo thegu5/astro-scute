@@ -45,7 +45,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
-		"@standard-schema/spec": "^1.1.0",
 		"@types/node": "^25.9.3",
 		"tsdown": "^0.22.2",
 		"typescript": "^6.0.3"
