@@ -289,4 +289,5 @@ export async function publish() {
 		await ok(rpc.call(op.type, op.init));
 	}
 	outro("Done!");
+	process.exit(0);
 }
