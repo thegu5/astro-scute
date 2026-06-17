@@ -13,7 +13,6 @@ export type ScuteConfig = {
 	publications: PublicationConfig[];
 };
 
-
 // https://github.com/withastro/astro/blob/4c4a91c3ef3e3316cb9faa32e37c69d69902b956/packages/astro/src/content/data-store.ts
 
 export interface RenderedContent {

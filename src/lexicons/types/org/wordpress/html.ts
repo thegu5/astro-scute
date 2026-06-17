@@ -2,16 +2,16 @@ import type {} from "@atcute/lexicons";
 import * as v from "@atcute/lexicons/validations";
 
 const _mainSchema = /*#__PURE__*/ v.object({
-  $type: /*#__PURE__*/ v.optional(
-    /*#__PURE__*/ v.literal("org.wordpress.html"),
-  ),
-  /**
-   * Rendered HTML content.
-   * @maxGraphemes 100000
-   */
-  html: /*#__PURE__*/ v.constrain(/*#__PURE__*/ v.string(), [
-    /*#__PURE__*/ v.stringGraphemes(0, 100000),
-  ]),
+	$type: /*#__PURE__*/ v.optional(
+		/*#__PURE__*/ v.literal("org.wordpress.html"),
+	),
+	/**
+	 * Rendered HTML content.
+	 * @maxGraphemes 100000
+	 */
+	html: /*#__PURE__*/ v.constrain(/*#__PURE__*/ v.string(), [
+		/*#__PURE__*/ v.stringGraphemes(0, 100000),
+	]),
 });
 
 type main$schematype = typeof _mainSchema;

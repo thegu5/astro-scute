@@ -143,7 +143,7 @@ export async function init() {
 		let contentType: PublicationConfig["contentType"] = "html";
 
 		const pubEntries = dataStore.get(collectionName);
-		if (pubEntries?.values().every(v => v.filePath?.endsWith(".md"))) {
+		if (pubEntries?.values().every((v) => v.filePath?.endsWith(".md"))) {
 			contentType = "markdown";
 		}
 
