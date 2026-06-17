@@ -19,11 +19,12 @@ import {
 	type StoredState,
 } from "@atcute/oauth-node-client";
 import { cancel, isCancel, log, spinner } from "@clack/prompts";
-import type { DataEntry } from "astro/content/config";
 import * as devalue from "devalue";
 import envPaths from "env-paths";
 import { getRandomPort } from "get-port-please";
-import type { PublicationConfig, ScuteConfig } from "./types.ts";
+import { transformSync, walkSync } from "ultrahtml";
+import sanitize from "ultrahtml/transformers/sanitize";
+import type { DataEntry, PublicationConfig, ScuteConfig } from "./types.ts";
 
 export const hexToRGB = (hex: string) => {
 	let parseString = hex;
@@ -235,4 +236,28 @@ export function buildPublicationUri(
 	publication: PublicationConfig,
 ): `${string}:${string}` {
 	return `at://${identity}/site.standard.publication/scute-${publication.collectionName}`;
+}
+
+/** Similar to `content:encoded` in RSS (makes link paths absolute, etc) */
+export function processHtml(html: string, site: string | undefined) {
+	if (!site) {
+		throw new Error("site needs to be defined in your astro config");
+	}
+
+	if (site.at(-1) === "/") site = site.slice(0, -1);
+
+	return transformSync(html, [
+		(node) => {
+			walkSync(node, (node) => {
+				if (node.name === "a" && node.attributes.href?.startsWith("/")) {
+					node.attributes.href = site + node.attributes.href;
+				}
+				if (node.name === "img" && node.attributes.src?.startsWith("/")) {
+					node.attributes.src = site + node.attributes.src;
+				}
+			});
+			return node;
+		},
+		sanitize({ dropElements: ["script"] }),
+	]);
 }

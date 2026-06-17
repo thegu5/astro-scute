@@ -1,0 +1,17 @@
+{
+  "lexicon": 1,
+  "id": "org.wordpress.html",
+  "defs": {
+    "main": {
+      "type": "object",
+      "required": ["html"],
+      "properties": {
+        "html": {
+          "type": "string",
+          "maxGraphemes": 100000,
+          "description": "Rendered HTML content."
+        }
+      }
+    }
+  }
+}

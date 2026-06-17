@@ -44,6 +44,8 @@
 		"test": "node --test"
 	},
 	"devDependencies": {
+		"@astrojs/markdown-satteri": "^0.3.0",
+		"@atcute/lex-cli": "^3.1.0",
 		"@biomejs/biome": "^2.5.0",
 		"@types/node": "^25.9.3",
 		"tsdown": "^0.22.2",

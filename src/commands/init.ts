@@ -96,6 +96,12 @@ export async function init() {
 			`Now configuring publication for "${collectionName}" collection`,
 		);
 
+		const name = await text({
+			message: "What is this publication's name?",
+			validate: SiteStandardPublication.mainSchema.object.shape.name,
+		});
+		cancelIfNeeded(name);
+
 		const srcDir = fileURLToPath(astroConfig.srcDir)
 			.replace(`${process.cwd()}/`, "")
 			.slice(0, -1);
@@ -108,12 +114,6 @@ export async function init() {
 		});
 		cancelIfNeeded(contentPath);
 		contentPath = contentPath.replace(`${srcDir}/pages/`, "");
-
-		const name = await text({
-			message: "What is this publication's name?",
-			validate: SiteStandardPublication.mainSchema.object.shape.name,
-		});
-		cancelIfNeeded(name);
 
 		let pubUrl: URL = new URL(astroConfig.base, astroConfig.site);
 
@@ -140,21 +140,27 @@ export async function init() {
 			pubUrl = res;
 		}
 
+		let contentType: PublicationConfig["contentType"] = "html";
+
+		const pubEntries = dataStore.get(collectionName);
+		if (pubEntries?.values().every(v => v.filePath?.endsWith(".md"))) {
+			contentType = "markdown";
+		}
+
 		const publicationConfig: PublicationConfig = {
 			collectionName,
+			baseContentPath: pubUrl !== listingUrl ? `/${contentPath}` : undefined,
+			contentType,
 			record: {
+				$type: "site.standard.publication",
 				name,
 				url: pubUrl.toString().replace(/\/$/, "") as `${string}:${string}`,
 				description: "A description! (optional)",
-				$type: "site.standard.publication",
 				preferences: {
 					showInDiscover: true,
 				},
 			},
 		};
-		if (pubUrl !== listingUrl) {
-			publicationConfig.baseContentPath = `/${contentPath}`;
-		}
 
 		prelimConfig.publications.push(publicationConfig);
 	}

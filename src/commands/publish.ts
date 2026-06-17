@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
+import type { SatteriMarkdownProcessorOptions } from "@astrojs/markdown-satteri";
 import {
 	ComAtprotoRepoCreateRecord,
 	ComAtprotoRepoDeleteRecord,
@@ -13,7 +14,6 @@ import {
 	ValidationError,
 } from "@atcute/lexicons";
 import type {
-	InferOutput,
 	RecordKeySchema,
 	RecordObjectSchema,
 	RecordSchema,
@@ -24,13 +24,16 @@ import {
 	SiteStandardPublication,
 } from "@atcute/standard-site";
 import { cancel, confirm, log, outro, spinner } from "@clack/prompts";
-import type { DataEntry } from "astro/content/config";
+import type { AtMarkpubMarkdown, OrgWordpressHtml } from "../lexicons/index.ts";
+import type { DataEntry, PublicationConfig } from "../types.ts";
 import {
 	buildPublicationUri,
 	cancelIfNeeded,
 	createOAuthSession,
+	getAstroConfig,
 	getConfig,
 	getDataStore,
+	processHtml,
 } from "../util.ts";
 
 async function listRecords<
@@ -67,26 +70,60 @@ async function listRecords<
 }
 
 // todo: better documentation for what frontmatter data astro-scute uses
-function makeSiteStandardDocument(
+async function makeSiteStandardDocument(
 	entry: DataEntry,
-	baseContentPath: string | undefined,
-	pubUri: string,
+	publication: PublicationConfig,
 ) {
+	const scuteConfig = await getConfig();
+	const { markdown: mdConfig, site } = await getAstroConfig();
+	const mdFeatures =
+		(mdConfig.processor.options as SatteriMarkdownProcessorOptions).features ??
+		{};
+
 	const publishedAtSrc = entry.data.pubDate ?? entry.data.publishedAt;
 	const publishedAt =
 		publishedAtSrc instanceof Date
 			? publishedAtSrc.toISOString()
 			: (publishedAtSrc as string);
 
+	let content: AtMarkpubMarkdown.Main | OrgWordpressHtml.Main | undefined;
+
+	if (publication.contentType === "html") {
+		if (!entry.rendered) {
+			throw new Error(`${entry.id}'s content isn't rendered?`);
+		}
+		content = {
+			$type: "org.wordpress.html",
+			html: processHtml(entry.rendered.html, site),
+		};
+	} else if (publication.contentType === "markdown") {
+		if (!entry.body) {
+			throw new Error(`${entry.id}'s body doesn't exist?`);
+		}
+		content = {
+			$type: "at.markpub.markdown",
+			flavor: mdFeatures.gfm !== false ? "gfm" : "commonmark",
+			renderingRules: mdConfig.processor.name,
+			// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
+			frontMatter: [...[entry.rendered?.metadata?.frontmatter ?? []]] as any,
+			text: {
+				$type: "at.markpub.text",
+				markdown: entry.body,
+			},
+		};
+	}
+
 	return {
 		$type: "site.standard.document",
 		// would be _real nice_ to have astro:content typing here !!
 		title: entry.data.title as string,
-		site: pubUri as `${string}:${string}`,
+		site: buildPublicationUri(scuteConfig.identity, publication),
 		publishedAt,
-		path: `${baseContentPath ?? ""}/${entry.id}`,
-		// TODO: CONTENT, ETC
-	} satisfies InferOutput<typeof SiteStandardDocument.mainSchema>;
+		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
+		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
+		content: content as any,
+		// todo: bskyPostRef, tags, ...
+	} satisfies SiteStandardDocument.Main;
 }
 
 export async function publish() {
@@ -171,7 +208,7 @@ export async function publish() {
 
 		// these documents exist on the user's PDS, tied to a scute-managed publication, but no longer exist in the content collection
 		// so, we delete them
-		publishedDocumentRkeys.difference(localDocumentRkeys).forEach((rkey) => {
+		for (const rkey of publishedDocumentRkeys.difference(localDocumentRkeys)) {
 			queuedOperations.push({
 				type: ComAtprotoRepoDeleteRecord,
 				init: {
@@ -182,10 +219,13 @@ export async function publish() {
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>,
 			});
-		});
+		}
 
 		// these documents exist in the content collection, but not on the user's PDS
-		localDocumentRkeys.difference(publishedDocumentRkeys).forEach((rkey) => {
+
+		for await (const rkey of localDocumentRkeys.difference(
+			publishedDocumentRkeys,
+		)) {
 			// cursed
 			const entry = dataStore
 				.get(publication.collectionName)
@@ -196,11 +236,7 @@ export async function publish() {
 				process.exit(1);
 			}
 
-			const record = makeSiteStandardDocument(
-				entry,
-				publication.baseContentPath,
-				pubUri,
-			);
+			const record = await makeSiteStandardDocument(entry, publication);
 
 			queuedOperations.push({
 				type: ComAtprotoRepoCreateRecord,
@@ -213,10 +249,12 @@ export async function publish() {
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
 			});
-		});
+		}
 
 		// these documents exist in both the content collection, as well as the user's PDS
-		localDocumentRkeys.intersection(publishedDocumentRkeys).forEach((rkey) => {
+		for await (const rkey of localDocumentRkeys.intersection(
+			publishedDocumentRkeys,
+		)) {
 			// cursed
 			const entry = dataStore
 				.get(publication.collectionName)
@@ -227,11 +265,7 @@ export async function publish() {
 				process.exit(1);
 			}
 
-			const newDocument = makeSiteStandardDocument(
-				entry,
-				publication.baseContentPath,
-				pubUri,
-			);
+			const newDocument = await makeSiteStandardDocument(entry, publication);
 
 			// are they identical? if so, skip
 			if (isDeepStrictEqual(documentRecords.get(rkey), newDocument)) {
@@ -249,7 +283,7 @@ export async function publish() {
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>,
 			});
-		});
+		}
 	}
 
 	if (queuedOperations.length === 0) {

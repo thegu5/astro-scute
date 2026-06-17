@@ -24,7 +24,7 @@ That's it, you're all set up! Your site now has the necessary metadata, and runn
 - [x] automatic `.well-known` and `<link>` metadata injection
 - [ ] app password support (especially helpful for CI)
 - [ ] be spec-compliant
-- [ ] store content within Standard.site records
+- [x] store content within Standard.site records
   - [ ] [markpub](https://markpub.at)
   - [ ] some HTML lexicon
 - [ ] subscribe & recommend button components

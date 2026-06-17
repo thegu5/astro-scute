@@ -48,6 +48,12 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
     devDependencies:
+      '@astrojs/markdown-satteri':
+        specifier: ^0.3.0
+        version: 0.3.0
+      '@atcute/lex-cli':
+        specifier: ^3.1.0
+        version: 3.1.0(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(typescript@6.0.3)
       '@biomejs/biome':
         specifier: ^2.5.0
         version: 2.5.0
@@ -130,6 +136,9 @@ packages:
   '@astrojs/internal-helpers@0.10.0':
     resolution: {integrity: sha512-Ry2R3VPeIN4uPCSA4xQc+e+vsJXkalKpEbDc07hV+a/o5Bs2N/s/uDcPJH/05L19DKh9tAy7e6JM3YZ6Cxfezw==}
 
+  '@astrojs/markdown-satteri@0.3.0':
+    resolution: {integrity: sha512-dJ3boRA7LyPTF13aOFUtZlY8XgnjMNXNL8Hc7FuUsT5IRtMKTl8DKjcV4JvLLKKc0kxHMsVoVnnH99e+aJRkjA==}
+
   '@astrojs/markdown-satteri@0.3.1-beta.1':
     resolution: {integrity: sha512-mNs4/qfOpVii2IqWz6uiWU1cdzjpXnx4/EUZ6wtTEuMb/4snCJ6U9JzQZOsuEBIY+BamoLD2lyrsb9x0aq6C4g==}
 
@@ -146,10 +155,27 @@ packages:
     peerDependencies:
       '@atcute/lexicons': ^2.0.0
 
+  '@atcute/car@6.0.1':
+    resolution: {integrity: sha512-5AAST9rUtKAiZa4W4+sMXJZjxdm4zjuhIzSzwCfvVROLNrCwS8xOG9foEqxY3UYQXeBk8DX5yM0yxOc58wmmBg==}
+    peerDependencies:
+      '@atcute/cbor': ^2.0.0
+      '@atcute/cid': ^2.0.0
+
+  '@atcute/cbor@2.3.4':
+    resolution: {integrity: sha512-gaUjWt3+QJ34VSbRxQ0ESbN7k2Rm7ce+QTz3HQ3Oq//xQXRknwhS6l+Up8vw/S4Vv9xaa9mukC3U+bRp5FUr2Q==}
+    peerDependencies:
+      '@atcute/cid': ^2.0.0
+
+  '@atcute/cid@2.4.1':
+    resolution: {integrity: sha512-bwhna69RCv7yetXudtj+2qrMPYvhhIQqvJz6YUpUS98v7OdF3X2dnye9Nig2NDrklZcuyOsu7sQo7GOykJXRLQ==}
+
   '@atcute/client@5.1.0':
     resolution: {integrity: sha512-l2LYCY43QvrOsvS+q1d959x0yVeXQ5F7haloCB8MLzrTKT3s9fc4S3Kr+8JkgjPtdapgOPIeEdhWcrzP5WNLRg==}
     peerDependencies:
       '@atcute/lexicons': ^2.0.0
+
+  '@atcute/crypto@2.4.1':
+    resolution: {integrity: sha512-tJ3Pi/XYcAsABKtqSlSOTKfO5YiQ4XdqlTuPS8HiRZSezOPcXBFFzAFWpSIJPURbVPFQL3LLrrK0Ea24wl5qeQ==}
 
   '@atcute/identity-resolver@2.0.0':
     resolution: {integrity: sha512-IKg1BDQAF2bIdN10DL6KAXmTjK+3enTU2IRbuani9TsFahBwGZ7O5FiVmTiL6QlGfauGNW5S0xNCOxWXWMoR2Q==}
@@ -162,8 +188,31 @@ packages:
     peerDependencies:
       '@atcute/lexicons': ^2.0.0
 
+  '@atcute/lex-cli@3.1.0':
+    resolution: {integrity: sha512-Mba7y12ENIbdj+cr+gt5mJTalpuz/UbS4ykm/wT7t9ipoJtidXMSeuQFfeoyBvvidW77Vg4G6zxZkoDxtlr6Mg==}
+    hasBin: true
+
+  '@atcute/lexicon-doc@3.0.0':
+    resolution: {integrity: sha512-hxBTEvO78X4j/HsGgcH8GKgMA9hP9FM6jtwQL8Yd6MIHtGXdB8QygvBmOAJEqm1oE9ckU1SSU3cwa2t4tbZZNw==}
+    peerDependencies:
+      '@atcute/lexicons': ^2.0.0
+
+  '@atcute/lexicon-resolver@1.0.0':
+    resolution: {integrity: sha512-4v3oSijgd3w9JS2BMsV1dfD+GD1ClQeuEJatM9b7rNffi1kMTSn/3nOQbJ1aNeXfqZbCkn3ATDRdvgki1xIAZw==}
+    peerDependencies:
+      '@atcute/identity': ^2.0.0
+      '@atcute/identity-resolver': ^2.0.0
+      '@atcute/lexicon-doc': ^3.0.0
+      '@atcute/lexicons': ^2.0.0
+
   '@atcute/lexicons@2.0.1':
     resolution: {integrity: sha512-MsgGYgZ7bXcXWg/CzAQX+d+/u4YrelQYnxtX6NW3Bc+6eOyzxozBPRWVFzfsR9OCT10Qzqmuujul/8bRYNCZ6w==}
+
+  '@atcute/mst@1.0.1':
+    resolution: {integrity: sha512-F3PfHt/6RedpSCwPFVOK8YQ+9lohAqeqUfqWrXLEZUmSVjXPlhSY6re+fmAnNuYX1g124QprIea9G2K3IfymyQ==}
+    peerDependencies:
+      '@atcute/cbor': ^2.0.0
+      '@atcute/cid': ^2.0.0
 
   '@atcute/multibase@1.2.2':
     resolution: {integrity: sha512-gLMdXZE97QPhC5muu6GbTMQaWRqYr7NjNatBtXrbSIi5StoqD4ThejQectJ2lzq29OrKlPQT+y+Ep5eDYRVOEg==}
@@ -183,6 +232,13 @@ packages:
   '@atcute/oauth-types@1.0.0':
     resolution: {integrity: sha512-YOpjLU8H5PG6oKfgau+dx7rSmGsLxIA36MeGL7BDeopcyq80RqPSBAzOasEEsmbMRJ/nTsMRJhnmGkp3RCa/Zw==}
 
+  '@atcute/repo@1.0.1':
+    resolution: {integrity: sha512-ufSPhcvtQZ1npiEQla45HmKqfmrlxMeoX5HmudavwpBWE1HZEaxZu1L2qP43K+Ontk0S0Cv5PHQRZTkuIdubzA==}
+    peerDependencies:
+      '@atcute/cbor': ^2.0.0
+      '@atcute/cid': ^2.0.0
+      '@atcute/lexicons': ^2.0.0
+
   '@atcute/standard-site@2.0.1':
     resolution: {integrity: sha512-fT6cfho6qWqV9kIzacbdD+i1vFBMJSITSbnzzzbBpKKYo1jVbanWytG9SgA3vtIl71H8k0ZHylvGFqzwdOXzLQ==}
     peerDependencies:
@@ -196,6 +252,9 @@ packages:
 
   '@atcute/util-text@1.3.1':
     resolution: {integrity: sha512-MRgJXkx67znuBXuoAYCJkBZyd3OApL7zZlNf5kXhuoCXcdiu1nblRDycYTADSkym4epBSQWxh26kmI9sewaq6A==}
+
+  '@atcute/varint@2.0.0':
+    resolution: {integrity: sha512-CEY/oVK/nVpL4e5y3sdenLETDL6/Xu5xsE/0TupK+f0Yv8jcD60t2gD8SHROWSvUwYLdkjczLCSA7YrtnjCzWw==}
 
   '@babel/generator@8.0.0-rc.6':
     resolution: {integrity: sha512-6mIzgVK8DgEzvIapoQwhXTMnnkuE4STQmVv9H03i/tZ2ml8oev3TRvZJgTenK2Bsq0YWNtzOrFdTyNzCMFtjJQ==}
@@ -690,6 +749,17 @@ packages:
     peerDependencies:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
+
+  '@noble/secp256k1@3.1.0':
+    resolution: {integrity: sha512-+F7iS7tUMaNGXcc9X3PjmjvuQnXEuSjCRNzVVA2xAcKXgCaP0dHYz4SFyt4FKNHef7sOP//xihowcySSS7PK9g==}
+
+  '@optique/core@1.1.0':
+    resolution: {integrity: sha512-eBqai76tHiFDoShlTNXN9AAPs9XznCJRrk4qmGhjZUSMmePCF9o1XU3okUHxHdDXXCHj4auKoIvCN79KNKErxA==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
+
+  '@optique/run@1.1.0':
+    resolution: {integrity: sha512-dcuqqqU1Cpm9CLGEkCkpT/cpJ6H6a+hs0rP+iD8Tgwb+CPPZtX/hCfdIrqYyZ2RtYLxgc3S6KqC81AZAwEUPew==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
@@ -1493,6 +1563,11 @@ packages:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  prettier@3.8.4:
+    resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   prismjs@1.30.0:
     resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
@@ -1936,6 +2011,13 @@ snapshots:
       smol-toml: 1.6.1
       unified: 11.0.5
 
+  '@astrojs/markdown-satteri@0.3.0':
+    dependencies:
+      '@astrojs/internal-helpers': 0.10.0
+      '@astrojs/prism': 4.0.2
+      github-slugger: 2.0.0
+      satteri: 0.8.1
+
   '@astrojs/markdown-satteri@0.3.1-beta.1':
     dependencies:
       '@astrojs/internal-helpers': 0.10.0
@@ -1959,12 +2041,36 @@ snapshots:
     dependencies:
       '@atcute/lexicons': 2.0.1
 
+  '@atcute/car@6.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)':
+    dependencies:
+      '@atcute/cbor': 2.3.4(@atcute/cid@2.4.1)
+      '@atcute/cid': 2.4.1
+      '@atcute/uint8array': 1.1.2
+      '@atcute/varint': 2.0.0
+
+  '@atcute/cbor@2.3.4(@atcute/cid@2.4.1)':
+    dependencies:
+      '@atcute/cid': 2.4.1
+      '@atcute/multibase': 1.2.2
+      '@atcute/uint8array': 1.1.2
+
+  '@atcute/cid@2.4.1':
+    dependencies:
+      '@atcute/multibase': 1.2.2
+      '@atcute/uint8array': 1.1.2
+
   '@atcute/client@5.1.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)':
     dependencies:
       '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
       '@atcute/lexicons': 2.0.1
     transitivePeerDependencies:
       - typescript
+
+  '@atcute/crypto@2.4.1':
+    dependencies:
+      '@atcute/multibase': 1.2.2
+      '@atcute/uint8array': 1.1.2
+      '@noble/secp256k1': 3.1.0
 
   '@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)':
     dependencies:
@@ -1982,12 +2088,60 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@atcute/lex-cli@3.1.0(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(typescript@6.0.3)':
+    dependencies:
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/identity-resolver': 2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicon-doc': 3.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicon-resolver': 1.0.0(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicon-doc@3.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicons': 2.0.1
+      '@optique/core': 1.1.0
+      '@optique/run': 1.1.0
+      picocolors: 1.1.1
+      prettier: 3.8.4
+      valibot: 1.4.1(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@atcute/cbor'
+      - '@atcute/cid'
+      - typescript
+
+  '@atcute/lexicon-doc@3.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)':
+    dependencies:
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicons': 2.0.1
+      '@atcute/uint8array': 1.1.2
+      '@atcute/util-text': 1.3.1
+      valibot: 1.4.1(typescript@6.0.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/lexicon-resolver@1.0.0(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicon-doc@3.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)':
+    dependencies:
+      '@atcute/crypto': 2.4.1
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/identity-resolver': 2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicon-doc': 3.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicons': 2.0.1
+      '@atcute/repo': 1.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(@atcute/lexicons@2.0.1)
+      '@atcute/util-fetch': 2.0.0(typescript@6.0.3)
+      valibot: 1.4.1(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@atcute/cbor'
+      - '@atcute/cid'
+      - typescript
+
   '@atcute/lexicons@2.0.1':
     dependencies:
       '@atcute/uint8array': 1.1.2
       '@atcute/util-text': 1.3.1
       '@standard-schema/spec': 1.1.0
       esm-env: 1.2.2
+
+  '@atcute/mst@1.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)':
+    dependencies:
+      '@atcute/cbor': 2.3.4(@atcute/cid@2.4.1)
+      '@atcute/cid': 2.4.1
+      '@atcute/uint8array': 1.1.2
 
   '@atcute/multibase@1.2.2':
     dependencies:
@@ -2032,6 +2186,16 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@atcute/repo@1.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)(@atcute/lexicons@2.0.1)':
+    dependencies:
+      '@atcute/car': 6.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)
+      '@atcute/cbor': 2.3.4(@atcute/cid@2.4.1)
+      '@atcute/cid': 2.4.1
+      '@atcute/crypto': 2.4.1
+      '@atcute/lexicons': 2.0.1
+      '@atcute/mst': 1.0.1(@atcute/cbor@2.3.4(@atcute/cid@2.4.1))(@atcute/cid@2.4.1)
+      '@atcute/uint8array': 1.1.2
+
   '@atcute/standard-site@2.0.1(@atcute/lexicons@2.0.1)':
     dependencies:
       '@atcute/atproto': 4.0.2(@atcute/lexicons@2.0.1)
@@ -2048,6 +2212,8 @@ snapshots:
   '@atcute/util-text@1.3.1':
     dependencies:
       unicode-segmenter: 0.14.5
+
+  '@atcute/varint@2.0.0': {}
 
   '@babel/generator@8.0.0-rc.6':
     dependencies:
@@ -2425,6 +2591,14 @@ snapshots:
       '@emnapi/runtime': 1.9.1
       '@tybys/wasm-util': 0.10.2
     optional: true
+
+  '@noble/secp256k1@3.1.0': {}
+
+  '@optique/core@1.1.0': {}
+
+  '@optique/run@1.1.0':
+    dependencies:
+      '@optique/core': 1.1.0
 
   '@oslojs/encoding@1.1.0': {}
 
@@ -3189,6 +3363,8 @@ snapshots:
       nanoid: 3.3.12
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  prettier@3.8.4: {}
 
   prismjs@1.30.0: {}
 
