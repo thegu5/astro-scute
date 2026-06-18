@@ -19,6 +19,10 @@ That's it, you're all set up! Your site now has the necessary metadata, and runn
 
 (insert asciinema recording here)
 
+## Development
+
+Make sure to run `pnpm astro sync` to generate types for astro's virtual modules (`astro:content`, etc)
+
 ## Features / TODOs
 - [x] publishing/syncing records
 - [x] automatic `.well-known` and `<link>` metadata injection
