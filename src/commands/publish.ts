@@ -25,6 +25,7 @@ import {
 } from "@atcute/standard-site";
 import { cancel, confirm, log, outro, spinner } from "@clack/prompts";
 import type { AtMarkpubMarkdown, OrgWordpressHtml } from "../lexicons/index.ts";
+import { scuteSchema } from "../schema.ts";
 import type { DataEntry, PublicationConfig } from "../types.ts";
 import {
 	buildPublicationUri,
@@ -80,12 +81,6 @@ async function makeSiteStandardDocument(
 		(mdConfig.processor.options as SatteriMarkdownProcessorOptions).features ??
 		{};
 
-	const publishedAtSrc = entry.data.pubDate ?? entry.data.publishedAt;
-	const publishedAt =
-		publishedAtSrc instanceof Date
-			? publishedAtSrc.toISOString()
-			: (publishedAtSrc as string);
-
 	let content: AtMarkpubMarkdown.Main | OrgWordpressHtml.Main | undefined;
 
 	if (publication.contentType === "html") {
@@ -105,7 +100,7 @@ async function makeSiteStandardDocument(
 			flavor: mdFeatures.gfm !== false ? "gfm" : "commonmark",
 			renderingRules: mdConfig.processor.name,
 			// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
-			frontMatter: [...[entry.rendered?.metadata?.frontmatter ?? []]] as any,
+			frontMatter: entry.data as any,
 			text: {
 				$type: "at.markpub.text",
 				markdown: entry.body,
@@ -113,16 +108,21 @@ async function makeSiteStandardDocument(
 		};
 	}
 
+	const frontmatter = scuteSchema.parse(entry.data);
+
 	return {
 		$type: "site.standard.document",
-		// would be _real nice_ to have astro:content typing here !!
-		title: entry.data.title as string,
+		title: frontmatter.title,
+		description: frontmatter.description,
+		tags: frontmatter.tags ?? frontmatter.categories,
 		site: buildPublicationUri(scuteConfig.identity, publication),
-		publishedAt,
+		publishedAt: new Date(
+			frontmatter.pubDate! ?? frontmatter.publishedAt!,
+		).toISOString(),
 		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
 		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
 		content: content as any,
-		// todo: bskyPostRef, tags, ...
+		// todo: bskyPostRef, coverImage...
 	} satisfies SiteStandardDocument.Main;
 }
 

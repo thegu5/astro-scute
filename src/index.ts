@@ -59,4 +59,6 @@ const createPlugin = (_options?: object): AstroIntegration => {
 	};
 };
 
+export { scuteSchema } from "./schema.ts";
+
 export default createPlugin;

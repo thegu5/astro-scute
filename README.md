@@ -17,7 +17,18 @@ Then run the init command, which will walk you through setting up a `scute.confi
 
 That's it, you're all set up! Your site now has the necessary metadata, and running `pnpm scute publish` will sync the Standard.site records to your PDS.
 
-(insert asciinema recording here)
+### Notes
+
+For better error handling with frontmatter, it's highly recommended to have your content collection's schema extend `scuteSchema` like so:
+
+```ts
+const blog = defineCollection({
+  // ...
+  schema: z.object({
+    // your props go here
+  }).safeExtend(scuteSchema),
+});
+```
 
 ## Development
 
@@ -31,6 +42,8 @@ Make sure to run `pnpm astro sync` to generate types for astro's virtual modules
   - [x] some HTML lexicon
 - [ ] documentation
   - [ ] 'blessed' frontmatter properties
+  - [ ] asciinema recording
+  - [ ] jsdoc everywhere
 - [ ] app password support (especially helpful for CI)
 - [ ] be spec-compliant
 - [ ] subscribe & recommend button components
