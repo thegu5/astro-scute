@@ -26,11 +26,13 @@ Make sure to run `pnpm astro sync` to generate types for astro's virtual modules
 ## Features / TODOs
 - [x] publishing/syncing records
 - [x] automatic `.well-known` and `<link>` metadata injection
+- [x] store content within Standard.site records
+  - [x] [markpub](https://markpub.at)
+  - [x] some HTML lexicon
+- [ ] documentation
+  - [ ] 'blessed' frontmatter properties
 - [ ] app password support (especially helpful for CI)
 - [ ] be spec-compliant
-- [x] store content within Standard.site records
-  - [ ] [markpub](https://markpub.at)
-  - [ ] some HTML lexicon
 - [ ] subscribe & recommend button components
 - [ ] Bluesky comments component
   - [ ] tie to `bskyPostRef` ?
