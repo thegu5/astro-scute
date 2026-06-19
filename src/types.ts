@@ -3,13 +3,27 @@ import type { SiteStandardPublication } from "@atcute/standard-site";
 import type { MarkdownHeading } from "astro";
 
 export type PublicationConfig = {
+	/** Name of the associated content collection */
 	collectionName: string;
+	/**
+	 * Where rendered documents live on your page, relative to the publication's url.
+	 *
+	 * Example:
+	 *
+	 * 	url: https:/​/gu5.org
+	 * 	baseContentPath: "/blog"
+	 */
 	baseContentPath?: string;
+	/**
+	 * Type of content embedded into document records. `null` doesn't include any.
+	 */
 	contentType: "html" | "markdown" | null;
 	record: SiteStandardPublication.Main;
 };
 export type ScuteConfig = {
+	/** Identity to publish the records to */
 	identity: Did;
+	/** List of publication configurations */
 	publications: PublicationConfig[];
 };
 
