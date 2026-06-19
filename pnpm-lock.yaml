@@ -33,7 +33,7 @@ importers:
         specifier: ^1.5.1
         version: 1.5.1
       astro:
-        specifier: ^7.0.0-beta.4
+        specifier: ^7.0.0-0
         version: 7.0.0-beta.4(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.1)(@types/node@25.9.3)
       devalue:
         specifier: ^5.8.1
