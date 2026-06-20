@@ -58,6 +58,7 @@
 		"@atcute/identity-resolver": "^2.0.0",
 		"@atcute/lexicons": "^2.0.1",
 		"@atcute/oauth-node-client": "^2.0.0",
+		"@atcute/password-session": "^1.0.0",
 		"@atcute/standard-site": "^2.0.1",
 		"@bomb.sh/args": "^0.3.1",
 		"@clack/prompts": "^1.5.1",

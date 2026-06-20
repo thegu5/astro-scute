@@ -20,10 +20,10 @@ import {
 } from "@clack/prompts";
 import type { PublicationConfig, ScuteConfig } from "../types.ts";
 import {
+	actorResolver,
 	cancelIfNeeded,
 	getAstroConfig,
 	getDataStore,
-	handleResolver,
 } from "../util.ts";
 
 export async function init() {
@@ -59,7 +59,8 @@ export async function init() {
 		const spin = spinner();
 		spin.start("Resolving handle...");
 		try {
-			prelimConfig.identity = await handleResolver.resolve(actor);
+			const data = await actorResolver.resolve(actor);
+			prelimConfig.identity = data.did;
 			spin.stop("Handle resolved");
 		} catch (e) {
 			spin.error((e as Error).message);

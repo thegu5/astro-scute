@@ -30,7 +30,7 @@ import type { DataEntry, PublicationConfig } from "../types.ts";
 import {
 	buildPublicationUri,
 	cancelIfNeeded,
-	createOAuthSession,
+	createSession,
 	getAstroConfig,
 	getConfig,
 	getDataStore,
@@ -133,7 +133,7 @@ export async function publish() {
 
 	const loginSpin = spinner();
 	loginSpin.start("Logging in");
-	const session = await createOAuthSession(scuteConfig.identity);
+	const session = await createSession(scuteConfig.identity);
 	loginSpin.stop("Logged in");
 
 	const rpc = new Client({

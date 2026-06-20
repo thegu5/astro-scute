@@ -23,6 +23,9 @@ importers:
       '@atcute/oauth-node-client':
         specifier: ^2.0.0
         version: 2.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/password-session':
+        specifier: ^1.0.0
+        version: 1.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)
       '@atcute/standard-site':
         specifier: ^2.0.1
         version: 2.0.1(@atcute/lexicons@2.0.1)
@@ -231,6 +234,12 @@ packages:
 
   '@atcute/oauth-types@1.0.0':
     resolution: {integrity: sha512-YOpjLU8H5PG6oKfgau+dx7rSmGsLxIA36MeGL7BDeopcyq80RqPSBAzOasEEsmbMRJ/nTsMRJhnmGkp3RCa/Zw==}
+
+  '@atcute/password-session@1.0.0':
+    resolution: {integrity: sha512-yUYkLnYjQMOjKV6jHlE5oBAIDuRn18nTptNjLaF3LrTtsBVEXziwC5ByKkl65MLDHm27iUkzTehB4giqnwQnIA==}
+    peerDependencies:
+      '@atcute/identity': ^2.0.0
+      '@atcute/lexicons': ^2.0.0
 
   '@atcute/repo@1.0.1':
     resolution: {integrity: sha512-ufSPhcvtQZ1npiEQla45HmKqfmrlxMeoX5HmudavwpBWE1HZEaxZu1L2qP43K+Ontk0S0Cv5PHQRZTkuIdubzA==}
@@ -2183,6 +2192,14 @@ snapshots:
       '@atcute/lexicons': 2.0.1
       '@atcute/oauth-keyset': 0.1.1(typescript@6.0.3)
       valibot: 1.4.1(typescript@6.0.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/password-session@1.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3))(@atcute/lexicons@2.0.1)(typescript@6.0.3)':
+    dependencies:
+      '@atcute/client': 5.1.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.1)(typescript@6.0.3)
+      '@atcute/lexicons': 2.0.1
     transitivePeerDependencies:
       - typescript
 

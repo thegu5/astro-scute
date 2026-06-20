@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
+import type { FetchHandler, FetchHandlerObject } from "@atcute/client";
 import {
 	CompositeDidDocumentResolver,
 	CompositeHandleResolver,
@@ -10,14 +11,14 @@ import {
 	WebDidDocumentResolver,
 	WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
-import { type ActorIdentifier, type Did, isDid } from "@atcute/lexicons/syntax";
+import type { Did } from "@atcute/lexicons/syntax";
 import type { Store } from "@atcute/oauth-node-client";
 import {
 	MemoryStore,
 	OAuthClient,
-	type OAuthSession,
 	type StoredState,
 } from "@atcute/oauth-node-client";
+import { PasswordSession } from "@atcute/password-session";
 import { cancel, isCancel, log, spinner } from "@clack/prompts";
 import * as devalue from "devalue";
 import envPaths from "env-paths";
@@ -41,10 +42,6 @@ export const hexToRGB = (hex: string) => {
 		return null;
 	}
 	return { r, g, b };
-};
-
-type DiskStoreOptions = {
-	name: string;
 };
 
 export async function getConfig(): Promise<ScuteConfig> {
@@ -106,25 +103,36 @@ export async function getAstroConfig() {
 	return validateConfig(module.default, process.cwd(), "build"); // uhhhh
 }
 
-export const handleResolver = new CompositeHandleResolver({
-	methods: {
-		dns: new DohJsonHandleResolver({
-			dohUrl: "https://mozilla.cloudflare-dns.com/dns-query",
-		}),
-		http: new WellKnownHandleResolver(),
-	},
+export const actorResolver = new LocalActorResolver({
+	handleResolver: new CompositeHandleResolver({
+		methods: {
+			dns: new DohJsonHandleResolver({
+				dohUrl: "https://mozilla.cloudflare-dns.com/dns-query",
+			}),
+			http: new WellKnownHandleResolver(),
+		},
+	}),
+	didDocumentResolver: new CompositeDidDocumentResolver({
+		methods: {
+			plc: new PlcDidDocumentResolver(),
+			web: new WebDidDocumentResolver(),
+		},
+	}),
 });
 
-export const didDocumentResolver = new CompositeDidDocumentResolver({
-	methods: {
-		plc: new PlcDidDocumentResolver(),
-		web: new WebDidDocumentResolver(),
-	},
-});
+export async function createSession(
+	identity: Did,
+): Promise<FetchHandler | FetchHandlerObject> {
+	// if there's an app password, use that
+	if (process.env.SCUTE_APP_PASSWORD) {
+		const { pds } = await actorResolver.resolve(identity);
+		return await PasswordSession.login({
+			identifier: identity,
+			service: pds,
+			password: process.env.SCUTE_APP_PASSWORD,
+		});
+	}
 
-export async function createOAuthSession(
-	identity: ActorIdentifier,
-): Promise<OAuthSession> {
 	const port = await getRandomPort();
 	const redirectUri = `http://127.0.0.1:${port}/callback`;
 
@@ -133,10 +141,7 @@ export async function createOAuthSession(
 			redirect_uris: [redirectUri],
 			scope: ["include:site.standard.authFull"],
 		},
-		actorResolver: new LocalActorResolver({
-			handleResolver,
-			didDocumentResolver,
-		}),
+		actorResolver,
 		stores: {
 			sessions: new DiskStore({ name: "sessions.json" }),
 			states: new MemoryStore<string, StoredState>({
@@ -148,9 +153,7 @@ export async function createOAuthSession(
 	});
 
 	try {
-		const session = await oauth.restore(
-			isDid(identity) ? identity : await handleResolver.resolve(identity),
-		);
+		const session = await oauth.restore(identity);
 		await session.getTokenInfo();
 		return session;
 	} catch {
@@ -190,6 +193,10 @@ export async function createOAuthSession(
 		return callback.session;
 	}
 }
+
+type DiskStoreOptions = {
+	name: string;
+};
 
 export class DiskStore<K extends string, V> implements Store<K, V> {
 	#filePath;

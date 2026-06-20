@@ -30,6 +30,8 @@ const blog = defineCollection({
 });
 ```
 
+To publish documents via CI, you can make scute use an app password via the `SCUTE_APP_PASSWORD` environment variable.
+
 ## Development
 
 Make sure to run `pnpm astro sync` to generate types for astro's virtual modules (`astro:content`, etc)
@@ -40,11 +42,11 @@ Make sure to run `pnpm astro sync` to generate types for astro's virtual modules
 - [x] store content within Standard.site records
   - [x] [markpub](https://markpub.at)
   - [x] some HTML lexicon
+- [x] app password support (especially helpful for CI)
 - [ ] documentation
   - [ ] 'blessed' frontmatter properties
   - [ ] asciinema recording
   - [ ] jsdoc everywhere
-- [ ] app password support (especially helpful for CI)
 - [ ] be spec-compliant
 - [ ] subscribe & recommend button components
 - [ ] Bluesky comments component

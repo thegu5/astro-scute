@@ -1,7 +1,7 @@
 import { parse } from "@bomb.sh/args";
 import { init } from "./commands/init.ts";
 import { publish } from "./commands/publish.ts";
-import { createOAuthSession, getConfig } from "./util.ts";
+import { createSession, getConfig } from "./util.ts";
 
 const args = parse(process.argv, {
 	array: ["_"],
@@ -12,5 +12,5 @@ if (args._.at(-1) === "init") {
 	await publish();
 } else if (args._.at(-1) === "login") {
 	// todo better error handling here
-	await createOAuthSession((await getConfig()).identity);
+	await createSession((await getConfig()).identity);
 }
