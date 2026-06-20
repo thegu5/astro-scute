@@ -1,7 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
-import type { FetchHandler, FetchHandlerObject } from "@atcute/client";
 import {
 	CompositeDidDocumentResolver,
 	CompositeHandleResolver,
@@ -12,7 +11,7 @@ import {
 	WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
 import type { Did } from "@atcute/lexicons/syntax";
-import type { Store } from "@atcute/oauth-node-client";
+import type { OAuthSession, Store } from "@atcute/oauth-node-client";
 import {
 	MemoryStore,
 	OAuthClient,
@@ -122,7 +121,7 @@ export const actorResolver = new LocalActorResolver({
 
 export async function createSession(
 	identity: Did,
-): Promise<FetchHandler | FetchHandlerObject> {
+): Promise<OAuthSession | PasswordSession> {
 	// if there's an app password, use that
 	if (process.env.SCUTE_APP_PASSWORD) {
 		const { pds } = await actorResolver.resolve(identity);
