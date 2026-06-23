@@ -112,7 +112,7 @@ async function makeSiteStandardDocument(
 
 	const publishedAt = frontmatter.publishedAt ?? frontmatter.pubDate;
 	if (!publishedAt) {
-		throw new Error(`${entry.id} must have either have pubDate or publishedAt`)
+		throw new Error(`${entry.id} must have either have pubDate or publishedAt`);
 	}
 
 	return {
