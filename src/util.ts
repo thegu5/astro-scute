@@ -132,6 +132,13 @@ export async function createSession(
 		});
 	}
 
+	// if in CI without an app password, throw
+	if (process.env.CI) {
+		throw new Error(
+			"The SCUTE_APP_PASSWORD environment variable is required for publishing in CI",
+		);
+	}
+
 	const port = await getRandomPort();
 	const redirectUri = `http://127.0.0.1:${port}/callback`;
 
