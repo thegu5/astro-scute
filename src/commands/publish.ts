@@ -119,7 +119,7 @@ async function makeSiteStandardDocument(
 		$type: "site.standard.document",
 		title: frontmatter.title,
 		description: frontmatter.description,
-		tags: frontmatter.tags ?? frontmatter.categories,
+		tags: frontmatter.categories ?? frontmatter.tags,
 		site: buildPublicationUri(scuteConfig.identity, publication),
 		publishedAt: publishedAt.toISOString(),
 		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
