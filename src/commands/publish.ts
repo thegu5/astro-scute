@@ -110,15 +110,18 @@ async function makeSiteStandardDocument(
 
 	const frontmatter = scuteSchema.parse(entry.data);
 
+	const publishedAt = frontmatter.publishedAt ?? frontmatter.pubDate;
+	if (!publishedAt) {
+		throw new Error(`${entry.id} must have either have pubDate or publishedAt`)
+	}
+
 	return {
 		$type: "site.standard.document",
 		title: frontmatter.title,
 		description: frontmatter.description,
 		tags: frontmatter.tags ?? frontmatter.categories,
 		site: buildPublicationUri(scuteConfig.identity, publication),
-		publishedAt: new Date(
-			frontmatter.pubDate! ?? frontmatter.publishedAt!,
-		).toISOString(),
+		publishedAt: publishedAt.toISOString(),
 		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
 		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
 		content: content as any,

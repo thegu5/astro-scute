@@ -26,7 +26,7 @@ const blog = defineCollection({
   // ...
   schema: z.object({
     // your props go here
-  }).safeExtend(scuteSchema),
+  }).safeExtend(scuteSchema.shape),
 });
 ```
 
