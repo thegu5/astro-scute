@@ -45,11 +45,11 @@
 		"test": "node --test"
 	},
 	"devDependencies": {
-		"@astrojs/markdown-satteri": "^0.3.0",
+		"@astrojs/markdown-satteri": "^0.3.1",
 		"@atcute/lex-cli": "^3.1.0",
 		"@biomejs/biome": "^2.5.0",
-		"@types/node": "^25.9.3",
-		"tsdown": "^0.22.2",
+		"@types/node": "^26.0.0",
+		"tsdown": "^0.22.3",
 		"typescript": "^6.0.3"
 	},
 	"dependencies": {
@@ -61,7 +61,7 @@
 		"@atcute/password-session": "^1.0.0",
 		"@atcute/standard-site": "^2.0.1",
 		"@bomb.sh/args": "^0.3.1",
-		"@clack/prompts": "^1.5.1",
+		"@clack/prompts": "^1.6.0",
 		"devalue": "^5.8.1",
 		"env-paths": "^4.0.0",
 		"get-port-please": "^3.2.0",
