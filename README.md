@@ -1,6 +1,8 @@
 
 > [!WARNING]
 > This package isn't fully ready for use yet, as it isn't [spec-compliant](https://tangled.org/standard.site/lexicons/issues/7).
+> 
+> (Bluesky embeds work though 🫪)
 
 # astro-scute
 
