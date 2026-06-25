@@ -4,7 +4,7 @@ import { z } from "astro/zod";
 const dateSchema = z
 	.union([z.string(), z.number(), z.date()])
 	.transform((value) => new Date(value))
-	.refine((value) => !Number.isNaN(value.getTime()))
+	.refine((value) => !Number.isNaN(value.getTime()));
 
 /**
  * Base schema for frontmatter properties relevant to scute

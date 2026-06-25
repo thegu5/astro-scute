@@ -44,7 +44,9 @@ export const hexToRGB = (hex: string) => {
 };
 
 export async function getConfig(): Promise<ScuteConfig> {
-	return (await import(join(process.cwd(), "scute.config.ts"))).default;
+	return (
+		await import(/* @vite-ignore */ join(process.cwd(), "scute.config.ts"))
+	).default;
 }
 
 export function pidIsRunning(pid: number) {
@@ -98,7 +100,9 @@ export async function getAstroConfig() {
 	const { validateConfig } = await import("astro/config");
 
 	// todo different file extensions
-	const module = await import(join(process.cwd(), "astro.config.ts"));
+	const module = await import(
+		/* @vite-ignore */ join(process.cwd(), "astro.config.ts")
+	);
 	return validateConfig(module.default, process.cwd(), "build"); // uhhhh
 }
 
