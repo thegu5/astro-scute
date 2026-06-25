@@ -1,8 +1,10 @@
 import { z } from "astro/zod";
 
-const dateSchema = z.coerce
-	.date()
-	.refine((value) => !Number.isNaN(value.getTime()));
+// see https://github.com/withastro/astro/blob/675d11d0859478f0a31132e2ca1371b1afe5651d/packages/astro-rss/src/schema.ts#L6
+const dateSchema = z
+	.union([z.string(), z.number(), z.date()])
+	.transform((value) => new Date(value))
+	.refine((value) => !Number.isNaN(value.getTime()))
 
 /**
  * Base schema for frontmatter properties relevant to scute
