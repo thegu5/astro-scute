@@ -13,24 +13,7 @@ const createPlugin = (_options?: object): AstroIntegration => {
 	return {
 		name: "astro-scute",
 		hooks: {
-			"astro:config:setup": async ({
-				addWatchFile,
-				addMiddleware,
-				updateConfig,
-			}) => {
-				// atcute has some invalid PURE annotations
-				updateConfig({
-					vite: {
-						build: {
-							rolldownOptions: {
-								checks: {
-									invalidAnnotation: false,
-								},
-							},
-						},
-					},
-				});
-
+			"astro:config:setup": async ({ addWatchFile, addMiddleware }) => {
 				addWatchFile("./scute.config.ts");
 
 				addMiddleware({
