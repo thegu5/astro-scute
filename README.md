@@ -21,9 +21,13 @@ That's it, you're all set up! Your site now has the necessary metadata, and runn
 
 ### Notes
 
-For better error handling with frontmatter, it's highly recommended to have your content collection's schema extend `scuteSchema` like so:
-
+A schema is provided to handle frontmatter properties relevant to standard.site.
+You might need to add it manually if the init script fails to do it for you:
 ```ts
+import { defineCollection } from "astro:content";
+import { z } from "astro/zod";
+import { scuteSchema } from "astro-scute";
+
 const blog = defineCollection({
   // ...
   schema: z.object({

@@ -1,6 +1,7 @@
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { styleText } from "node:util";
 import {
 	type ActorIdentifier,
 	isActorIdentifier,
@@ -18,6 +19,7 @@ import {
 	spinner,
 	text,
 } from "@clack/prompts";
+import { addScuteSchema } from "../schema.ts";
 import type { PublicationConfig, ScuteConfig } from "../types.ts";
 import {
 	actorResolver,
@@ -164,6 +166,16 @@ export async function init() {
 		};
 
 		prelimConfig.publications.push(publicationConfig);
+
+		try {
+			addScuteSchema(collectionName);
+		} catch (e) {
+			log.error(`\
+Failed to modify ${collectionName}'s schema automatically. See the project's README for how to do this yourself.
+https://github.com/thegu5/astro-scute#notes
+${styleText("gray", `(${(e as Error).message})`)}
+`);
+		}
 	}
 
 	writeFileSync(
