@@ -173,7 +173,7 @@ export async function init() {
 			log.error(`\
 Failed to modify ${collectionName}'s schema automatically. See the project's README for how to do this yourself.
 https://github.com/thegu5/astro-scute#notes
-${styleText("gray", `(${(e as Error).message})`)}
+${styleText("dim", `(${(e as Error).message})`)}
 `);
 		}
 	}
