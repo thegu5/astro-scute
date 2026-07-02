@@ -152,7 +152,8 @@ export async function init() {
 		}
 
 		const publicationConfig: PublicationConfig = {
-			collectionName,
+			// needed since the generated `astro:content` types in this repo don't align with the consumer's
+			collectionName: collectionName as never,
 			tid: createTid(crypto.randomUUID(), new Date()),
 			baseContentPath: pubUrl !== listingUrl ? `/${contentPath}` : undefined,
 			contentType,
