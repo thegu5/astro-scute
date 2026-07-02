@@ -1,10 +1,11 @@
+import type { CollectionKey } from "astro:content";
 import type { Did } from "@atcute/lexicons/syntax";
 import type { SiteStandardPublication } from "@atcute/standard-site";
 import type { MarkdownHeading } from "astro";
 
 export type PublicationConfig = {
 	/** Name of the associated content collection */
-	collectionName: string;
+	collectionName: CollectionKey;
 
 	/** Unique timestamp ID for the collection. You can generate one with `pnpm scute generate-tid`. */
 	tid: string;
