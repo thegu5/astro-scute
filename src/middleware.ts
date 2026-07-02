@@ -1,7 +1,13 @@
 import { defineMiddleware } from "astro:middleware";
 import { h, parse, renderSync } from "ultrahtml";
 import { querySelector } from "ultrahtml/selector";
-import { buildPublicationUri, getConfig } from "./util.ts";
+import { scuteSchema } from "./schema.ts";
+import {
+	buildPublicationUri,
+	createTid,
+	getConfig,
+	getDataStore,
+} from "./util.ts";
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
 	const scuteConfig = await getConfig();
@@ -27,21 +33,31 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 		} else if (
 			reqPath.startsWith(contentBasePath) &&
 			!(reqPath === contentBasePath) &&
+			// not sure if this is a good idea
 			Object.entries(ctx.props).length > 0
 		) {
-			// assume it's a document? todo look for alternatives
 			const response = await next();
 			const ast = parse(await response.text());
 
 			const rkey = reqPath
 				.split("/")
 				.filter((p) => p)
-				.at(-1);
+				.at(-1)!;
+
+			const dataStore = await getDataStore(true);
+			const entry = dataStore.get(publication.collectionName)!.get(rkey)!;
+			const frontmatter = scuteSchema.parse(entry?.data);
+			const publishedAt = frontmatter.publishedAt ?? frontmatter.pubDate;
+			if (!publishedAt) {
+				throw new Error(
+					`${entry.id} must have either have pubDate or publishedAt`,
+				);
+			}
 
 			querySelector(ast, "head").children.push(
 				h("link", {
 					rel: "site.standard.document",
-					href: `at://${scuteConfig.identity}/site.standard.document/scute-${publication.collectionName}-${rkey}`,
+					href: `at://${scuteConfig.identity}/site.standard.document/${createTid(`${publication.collectionName}-${entry.id}`, publishedAt)}`,
 				}),
 			);
 

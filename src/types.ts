@@ -5,6 +5,10 @@ import type { MarkdownHeading } from "astro";
 export type PublicationConfig = {
 	/** Name of the associated content collection */
 	collectionName: string;
+
+	/** Unique timestamp ID for the collection. You can generate one with `pnpm scute generate-tid`. */
+	tid: string;
+
 	/**
 	 * Where rendered documents live on your page, relative to the publication's url.
 	 *
@@ -14,10 +18,12 @@ export type PublicationConfig = {
 	 * 	baseContentPath: "/blog"
 	 */
 	baseContentPath?: string;
+
 	/**
 	 * Type of content embedded into document records. `null` doesn't include any.
 	 */
 	contentType: "html" | "markdown" | null;
+
 	record: SiteStandardPublication.Main;
 };
 export type ScuteConfig = {

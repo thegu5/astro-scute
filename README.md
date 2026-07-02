@@ -1,9 +1,3 @@
-
-> [!WARNING]
-> This package isn't fully ready for use yet, as it isn't [spec-compliant](https://tangled.org/standard.site/lexicons/issues/7).
-> 
-> (Bluesky embeds work though 🫪)
-
 # astro-scute
 
 astro-scute is an Astro integration that makes it easy to publish [Standard.site](https://standard.site) records for your content collections, with minimal configuration and no scripting.

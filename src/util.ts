@@ -66,16 +66,16 @@ type LockFileData = {
 	startedAt: string;
 };
 
-export async function getDataStore(): Promise<
-	Map<string, Map<string, DataEntry>>
-> {
+export async function getDataStore(
+	skipBuild?: boolean,
+): Promise<Map<string, Map<string, DataEntry>>> {
 	let devLock: LockFileData | null = null;
 	try {
 		devLock = JSON.parse(
 			readFileSync(join(process.cwd(), ".astro/dev.json"), "utf-8"),
 		);
 	} catch {}
-	if (!devLock || !pidIsRunning(devLock.pid)) {
+	if (!skipBuild && (!devLock || !pidIsRunning(devLock.pid))) {
 		const spin = spinner();
 		spin.start("Building your site");
 		// ideally we'd use devOutput, but that doesn't generate data-store.json for some reason
@@ -252,7 +252,7 @@ export function buildPublicationUri(
 	identity: Did,
 	publication: PublicationConfig,
 ): `${string}:${string}` {
-	return `at://${identity}/site.standard.publication/scute-${publication.collectionName}`;
+	return `at://${identity}/site.standard.publication/${publication.tid}`;
 }
 
 /** Similar to `content:encoded` in RSS (makes link paths absolute, etc) */
@@ -277,4 +277,41 @@ export function processHtml(html: string, site: string | undefined) {
 		},
 		sanitize({ dropElements: ["script"] }),
 	]);
+}
+
+// see: https://github.com/mastrojs/atproto/blob/44368cea969335930ba810db0b40c73e89ecdf85/src/rkey.ts#L28
+// licensed MIT (c) 2025 Mastro
+export function createTid(identifier: string, date: Date) {
+	// TID: 64-bit int (bit 63 = 0)
+	// - bits 62-10 = microsecond timestamp (53 bits)
+	// - bits 9-0 = clock ID (10 bits)
+	// todo: process.hrtime.bigint()
+	const micros = (BigInt(date.getTime()) * 1000n) & ((1n << 53n) - 1n);
+	const clockId = hashBits(identifier, 10);
+	const tid = (micros << 10n) | clockId;
+
+	return encodeTid(tid);
+}
+
+/**
+ * FNV-1a hash truncated to `nrOfBits` bits
+ */
+export function hashBits(s: string, nrOfBits: number) {
+	const mask = (1n << BigInt(nrOfBits)) - 1n;
+	let h = 0xcbf29ce484222325n;
+	for (let i = 0; i < s.length; i++) {
+		h ^= BigInt(s.charCodeAt(i));
+		h = (h * 0x100000001b3n) & 0xffffffffffffffffn;
+	}
+	return h & mask;
+}
+
+const BASE32 = "234567abcdefghijklmnopqrstuvwxyz";
+function encodeTid(n: bigint) {
+	let result = "";
+	for (let i = 0; i < 13; i++) {
+		result = BASE32[Number(n & 31n)] + result;
+		n >>= 5n;
+	}
+	return result;
 }

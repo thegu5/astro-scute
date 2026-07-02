@@ -1,4 +1,4 @@
-import { isDeepStrictEqual } from "node:util";
+import { isDeepStrictEqual, styleText } from "node:util";
 import type { SatteriMarkdownProcessorOptions } from "@astrojs/markdown-satteri";
 import {
 	ComAtprotoRepoCreateRecord,
@@ -31,6 +31,7 @@ import {
 	buildPublicationUri,
 	cancelIfNeeded,
 	createSession,
+	createTid,
 	getAstroConfig,
 	getConfig,
 	getDataStore,
@@ -74,7 +75,7 @@ async function listRecords<
 async function makeSiteStandardDocument(
 	entry: DataEntry,
 	publication: PublicationConfig,
-) {
+): Promise<SiteStandardDocument.Main> {
 	const scuteConfig = await getConfig();
 	const { markdown: mdConfig, site } = await getAstroConfig();
 	const mdFeatures =
@@ -99,8 +100,9 @@ async function makeSiteStandardDocument(
 			$type: "at.markpub.markdown",
 			flavor: mdFeatures.gfm !== false ? "gfm" : "commonmark",
 			renderingRules: mdConfig.processor.name,
+			// running it through stringify+parse normalizes dates to strings
 			// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
-			frontMatter: entry.data as any,
+			frontMatter: JSON.parse(JSON.stringify(entry.data as any)),
 			text: {
 				$type: "at.markpub.text",
 				markdown: entry.body,
@@ -151,7 +153,7 @@ export async function publish() {
 		SiteStandardPublication.mainSchema,
 	);
 	fetchSpin.message("Fetching document records");
-	const documentRecords = await listRecords(
+	const remoteDocumentRecords = await listRecords(
 		rpc,
 		session.did,
 		SiteStandardDocument.mainSchema,
@@ -165,14 +167,14 @@ export async function publish() {
 	type Operation<T extends XRPCProcedureMetadata = XRPCProcedureMetadata> = {
 		type: Namespaced<T>;
 		init: CallRequestOptions<T>;
+		id: string; // for better logging
 	};
 
 	const queuedOperations: Operation[] = [];
 
 	// make sure site.standard.publication records are up to date
 	for (const publication of scuteConfig.publications) {
-		// todo include site info here so it's unique enough
-		const rkey = `scute-${publication.collectionName}`;
+		const rkey = publication.tid;
 
 		if (isDeepStrictEqual(publicationRecords.get(rkey), publication.record)) {
 			continue;
@@ -190,28 +192,46 @@ export async function publish() {
 					rkey,
 				},
 			} satisfies CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema> satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
+			id: publication.collectionName,
 		});
 	}
-
 	// make sure site.standard.document records are up to date
 	for (const publication of scuteConfig.publications) {
 		const pubUri = buildPublicationUri(scuteConfig.identity, publication);
 
-		const publishedDocumentRkeys = new Set(
-			documentRecords
+		const remoteDocumentRkeys = new Set(
+			remoteDocumentRecords
 				.keys()
-				.filter((k) => documentRecords.get(k)?.site === pubUri),
+				.filter((k) => remoteDocumentRecords.get(k)?.site === pubUri),
 		);
-		const localDocumentRkeys = new Set(
-			dataStore
-				.get(publication.collectionName)
-				?.keys()
-				.map((k) => `scute-${publication.collectionName}-${k}`),
+
+		// horror
+		const localDocuments = new Map(
+			await Promise.all(
+				dataStore
+					.get(publication.collectionName)!
+					.values()
+					.map(async (entry) => {
+						const document = await makeSiteStandardDocument(entry, publication);
+						return [
+							createTid(
+								`${publication.collectionName}-${entry.id}`,
+								new Date(document.publishedAt),
+							),
+							{
+								document,
+								entry,
+							},
+						] as const;
+					}),
+			),
 		);
+
+		const localDocumentRkeys = new Set(localDocuments.keys());
 
 		// these documents exist on the user's PDS, tied to a scute-managed publication, but no longer exist in the content collection
 		// so, we delete them
-		for (const rkey of publishedDocumentRkeys.difference(localDocumentRkeys)) {
+		for (const rkey of remoteDocumentRkeys.difference(localDocumentRkeys)) {
 			queuedOperations.push({
 				type: ComAtprotoRepoDeleteRecord,
 				init: {
@@ -221,25 +241,23 @@ export async function publish() {
 						rkey,
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>,
+				id:
+					remoteDocumentRecords.get(rkey)!.path?.split("/").at(-1) ??
+					remoteDocumentRecords.get(rkey)!.title,
 			});
 		}
 
 		// these documents exist in the content collection, but not on the user's PDS
 
 		for await (const rkey of localDocumentRkeys.difference(
-			publishedDocumentRkeys,
+			remoteDocumentRkeys,
 		)) {
-			// cursed
-			const entry = dataStore
-				.get(publication.collectionName)
-				?.get(rkey.replace(`scute-${publication.collectionName}-`, ""));
-			if (!entry) {
+			const localInfo = localDocuments.get(rkey);
+			if (!localInfo) {
 				// todo better error message / make sure this can't happen
 				cancel("Something has gone wrong...");
 				process.exit(1);
 			}
-
-			const record = await makeSiteStandardDocument(entry, publication);
 
 			queuedOperations.push({
 				type: ComAtprotoRepoCreateRecord,
@@ -248,31 +266,30 @@ export async function publish() {
 						collection: "site.standard.document",
 						repo: scuteConfig.identity,
 						rkey,
-						record,
+						record: localInfo.document,
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
+				id: localInfo.entry.id,
 			});
 		}
 
 		// these documents exist in both the content collection, as well as the user's PDS
 		for await (const rkey of localDocumentRkeys.intersection(
-			publishedDocumentRkeys,
+			remoteDocumentRkeys,
 		)) {
 			// cursed
-			const entry = dataStore
-				.get(publication.collectionName)
-				?.get(rkey.replace(`scute-${publication.collectionName}-`, ""));
-			if (!entry) {
+			const localInfo = localDocuments.get(rkey);
+			if (!localInfo) {
 				// todo better error message / make sure this can't happen
 				cancel("Something has gone wrong...");
 				process.exit(1);
 			}
 
-			const newDocument = await makeSiteStandardDocument(entry, publication);
-
 			// are they identical? if so, skip
-			if (isDeepStrictEqual(documentRecords.get(rkey), newDocument)) {
-				return;
+			if (
+				isDeepStrictEqual(remoteDocumentRecords.get(rkey), localInfo.document)
+			) {
+				continue;
 			}
 
 			queuedOperations.push({
@@ -280,11 +297,12 @@ export async function publish() {
 				init: {
 					input: {
 						collection: "site.standard.document",
-						record: newDocument,
+						record: localInfo.document,
 						repo: scuteConfig.identity,
 						rkey,
 					},
 				} satisfies CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>,
+				id: localInfo.entry.id,
 			});
 		}
 	}
@@ -296,23 +314,27 @@ export async function publish() {
 
 	// summary of queued ops
 
+	let summaryMessage = "Summary:\n";
+
 	queuedOperations.forEach((op) => {
 		if (op.type === ComAtprotoRepoCreateRecord) {
-			log.success(
-				`creating ${(op.init as CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>).input.rkey}`,
-			);
-		}
-		if (op.type === ComAtprotoRepoPutRecord) {
-			log.warning(
-				`updating ${(op.init as CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>).input.rkey}`,
-			);
-		}
-		if (op.type === ComAtprotoRepoDeleteRecord) {
+			summaryMessage += styleText("green", "creating ");
+		} else if (op.type === ComAtprotoRepoPutRecord) {
+			summaryMessage += styleText("yellow", "updating ");
+		} else if (op.type === ComAtprotoRepoDeleteRecord) {
+			summaryMessage += styleText("red", "deleting ");
 			log.warning(
 				`deleting ${(op.init as CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>).input.rkey}`,
 			);
 		}
+		summaryMessage += op.id;
+		summaryMessage += styleText(
+			"dim",
+			` (${(op.init as CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>).input.rkey})\n`,
+		);
 	});
+
+	log.info(summaryMessage);
 
 	const confirmed = await confirm({
 		message: "Do you want to continue?",

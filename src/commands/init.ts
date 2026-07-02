@@ -24,6 +24,7 @@ import type { PublicationConfig, ScuteConfig } from "../types.ts";
 import {
 	actorResolver,
 	cancelIfNeeded,
+	createTid,
 	getAstroConfig,
 	getDataStore,
 } from "../util.ts";
@@ -152,6 +153,7 @@ export async function init() {
 
 		const publicationConfig: PublicationConfig = {
 			collectionName,
+			tid: createTid(crypto.randomUUID(), new Date()),
 			baseContentPath: pubUrl !== listingUrl ? `/${contentPath}` : undefined,
 			contentType,
 			record: {
@@ -168,7 +170,7 @@ export async function init() {
 		prelimConfig.publications.push(publicationConfig);
 
 		try {
-			addScuteSchema(collectionName);
+			await addScuteSchema(collectionName);
 		} catch (e) {
 			log.error(`\
 Failed to modify ${collectionName}'s schema automatically. See the project's README for how to do this yourself.

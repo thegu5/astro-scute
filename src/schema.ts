@@ -1,5 +1,4 @@
 import { z } from "astro/zod";
-import { Node, Project } from "ts-morph";
 
 // see https://github.com/withastro/astro/blob/675d11d0859478f0a31132e2ca1371b1afe5651d/packages/astro-rss/src/schema.ts#L6
 const dateSchema = z
@@ -22,7 +21,9 @@ export const scuteSchema = z.object({
 	tags: z.array(z.string()).optional(),
 });
 
-export function addScuteSchema(collectionName: string) {
+export async function addScuteSchema(collectionName: string) {
+	const { Node, Project } = await import("ts-morph");
+
 	const project = new Project({
 		tsConfigFilePath: "./tsconfig.json",
 	});
