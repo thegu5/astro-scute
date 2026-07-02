@@ -43,11 +43,11 @@ Make sure to run `pnpm astro sync` to generate types for astro's virtual modules
   - [x] [markpub](https://markpub.at)
   - [x] some HTML lexicon
 - [x] app password support (especially helpful for CI)
+- [x] be spec-compliant
 - [ ] documentation
   - [ ] 'blessed' frontmatter properties
   - [ ] asciinema recording
   - [ ] jsdoc everywhere
-- [ ] be spec-compliant
 - [ ] subscribe & recommend button components
 - [ ] Bluesky comments component
   - [ ] tie to `bskyPostRef` ?
