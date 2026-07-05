@@ -52,14 +52,14 @@ export async function addScuteSchema(collectionName: string) {
 		);
 	}
 	let schemaProp = configArg.getProperty("schema");
-	if (!Node.isPropertyAssignment(schemaProp)) {
-		throw new Error("invalid schema prop");
-	}
 	if (!schemaProp) {
 		schemaProp = configArg.addPropertyAssignment({
 			name: "schema",
 			initializer: "scuteSchema",
 		});
+	}
+	if (!Node.isPropertyAssignment(schemaProp)) {
+		throw new Error("invalid schema prop");
 	}
 
 	const schemaValue = schemaProp.getInitializerOrThrow();
