@@ -18,7 +18,7 @@ export type PublicationConfig = {
 	 * 	url: https:/​/gu5.org
 	 * 	baseContentPath: "/blog"
 	 */
-	baseContentPath?: string;
+	baseContentPath?: string | undefined;
 
 	/**
 	 * Type of content embedded into document records. `null` doesn't include any.

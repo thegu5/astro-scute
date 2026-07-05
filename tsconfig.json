@@ -2,6 +2,10 @@
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
 		"skipLibCheck": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"useUnknownInCatchVariables": true,
 		"types": ["node", "@atcute/standard-site", "@atcute/atproto"]
 	}
 }
