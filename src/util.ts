@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { createServer } from "node:http";
+import { createServer, type Server } from "node:http";
 import { join } from "node:path";
 import {
 	CompositeDidDocumentResolver,
@@ -162,6 +162,8 @@ export async function createSession(
 		},
 	});
 
+	let server: Server | undefined;
+
 	try {
 		const session = await oauth.restore(identity);
 		await session.getTokenInfo();
@@ -169,7 +171,7 @@ export async function createSession(
 	} catch {
 		const deferred = Promise.withResolvers<URLSearchParams>();
 
-		const server = createServer((req, res) => {
+		server = createServer((req, res) => {
 			const url = new URL(`http://localhost${req.url ?? "/"}`);
 			if (url.pathname === "/callback") {
 				deferred.resolve(url.searchParams);
@@ -183,7 +185,7 @@ export async function createSession(
 <p>you can close this window and return to the terminal.</p>
 </body>
 </html>`);
-				server.close();
+				server?.close();
 				return;
 			}
 			res.statusCode = 404;
@@ -201,6 +203,8 @@ export async function createSession(
 		const params = await deferred.promise;
 		const callback = await oauth.callback(params, { redirectUri });
 		return callback.session;
+	} finally {
+		server?.close();
 	}
 }
 
