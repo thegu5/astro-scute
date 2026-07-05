@@ -249,9 +249,7 @@ export async function publish() {
 
 		// these documents exist in the content collection, but not on the user's PDS
 
-		for await (const rkey of localDocumentRkeys.difference(
-			remoteDocumentRkeys,
-		)) {
+		for (const rkey of localDocumentRkeys.difference(remoteDocumentRkeys)) {
 			const localInfo = localDocuments.get(rkey);
 			if (!localInfo) {
 				// todo better error message / make sure this can't happen
@@ -274,9 +272,7 @@ export async function publish() {
 		}
 
 		// these documents exist in both the content collection, as well as the user's PDS
-		for await (const rkey of localDocumentRkeys.intersection(
-			remoteDocumentRkeys,
-		)) {
+		for (const rkey of localDocumentRkeys.intersection(remoteDocumentRkeys)) {
 			// cursed
 			const localInfo = localDocuments.get(rkey);
 			if (!localInfo) {
