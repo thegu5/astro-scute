@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { join } from "node:path";
@@ -123,6 +124,25 @@ export const actorResolver = new LocalActorResolver({
 	}),
 });
 
+function getStartCommand() {
+	switch (process.platform) {
+		case "android":
+		case "linux":
+			return ["xdg-open"] as const;
+		case "darwin":
+			return ["open"] as const;
+		case "win32":
+			return ["cmd", ["/c", "start"]] as const;
+		default:
+			throw new Error(`Platform ${process.platform} isn't supported.`);
+	}
+}
+
+function open(url: string) {
+	const [command, args = []] = getStartCommand();
+	execFileSync(command, [...args, url]);
+}
+
 export async function createSession(
 	identity: Did,
 ): Promise<OAuthSession | PasswordSession> {
@@ -199,6 +219,10 @@ export async function createSession(
 		});
 
 		log.info(`open this URL in your browser to authorize:\n${url.href}\n`);
+
+		try {
+			open(url.href);
+		} catch (_) {}
 
 		const params = await deferred.promise;
 		const callback = await oauth.callback(params, { redirectUri });
