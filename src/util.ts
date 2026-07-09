@@ -46,7 +46,7 @@ export const hexToRGB = (hex: string) => {
 
 export async function getConfig(): Promise<ScuteConfig> {
 	return (
-		await import(/* @vite-ignore */ join(process.cwd(), "scute.config.ts"))
+		await import(/* @vite-ignore */ `${join(process.cwd(), "scute.config.ts")}?time=${Date.now()}`)
 	).default;
 }
 
@@ -169,7 +169,7 @@ export async function createSession(
 	const oauth = new OAuthClient({
 		metadata: {
 			redirect_uris: [redirectUri],
-			scope: ["include:site.standard.authFull"],
+			scope: ["include:site.standard.authFull", "blob:*/*"],
 		},
 		actorResolver,
 		stores: {

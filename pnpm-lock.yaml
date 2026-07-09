@@ -11,6 +11,9 @@ importers:
       '@atcute/atproto':
         specifier: ^4.0.3
         version: 4.0.3(@atcute/lexicons@2.0.2)
+      '@atcute/cid':
+        specifier: ^2.4.2
+        version: 2.4.2
       '@atcute/client':
         specifier: ^5.1.1
         version: 5.1.1(@atcute/lexicons@2.0.2)(typescript@6.0.3)
@@ -47,6 +50,9 @@ importers:
       get-port-please:
         specifier: ^3.2.0
         version: 3.2.0
+      mime:
+        specifier: ^4.1.0
+        version: 4.1.0
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
@@ -1402,6 +1408,11 @@ packages:
 
   micromark-util-types@2.0.2:
     resolution: {integrity: sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA==}
+
+  mime@4.1.0:
+    resolution: {integrity: sha512-X5ju04+cAzsojXKes0B/S4tcYtFAJ6tTMuSPBEn9CPGlrWr8Fiw7qYeLT0XyH80HSoAoqWCaz+MWKh22P7G1cw==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   minimatch@10.2.5:
     resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
@@ -3099,6 +3110,8 @@ snapshots:
   micromark-util-symbol@2.0.1: {}
 
   micromark-util-types@2.0.2: {}
+
+  mime@4.1.0: {}
 
   minimatch@10.2.5:
     dependencies:

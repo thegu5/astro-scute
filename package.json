@@ -55,6 +55,7 @@
 	},
 	"dependencies": {
 		"@atcute/atproto": "^4.0.3",
+		"@atcute/cid": "^2.4.2",
 		"@atcute/client": "^5.1.1",
 		"@atcute/identity-resolver": "^2.0.1",
 		"@atcute/lexicons": "^2.0.2",
@@ -66,6 +67,7 @@
 		"devalue": "^5.8.1",
 		"env-paths": "^4.0.0",
 		"get-port-please": "^3.2.0",
+		"mime": "^4.1.0",
 		"ts-morph": "^28.0.0",
 		"ultrahtml": "^1.6.0"
 	},

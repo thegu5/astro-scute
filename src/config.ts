@@ -1,5 +1,16 @@
+import { readFileSync } from "node:fs";
+import {
+	ComAtprotoRepoUploadBlob,
+	ComAtprotoSyncListBlobs,
+} from "@atcute/atproto";
+import * as CID from "@atcute/cid";
+import { Client, ok } from "@atcute/client";
+import type { Blob } from "@atcute/lexicons";
 import type { SiteStandardThemeColor } from "@atcute/standard-site";
+import { spinner } from "@clack/prompts";
+import mime from "mime";
 import type { ScuteConfig } from "./types.ts";
+import { createSession, getConfig } from "./util.ts";
 
 export function defineConfig(options: ScuteConfig): ScuteConfig {
 	return options;
@@ -7,7 +18,7 @@ export function defineConfig(options: ScuteConfig): ScuteConfig {
 
 type Rgb = SiteStandardThemeColor.Rgb & {
 	$type: "site.standard.theme.color#rgb";
-}
+};
 
 /**
  * Conver a hex color to a Standard.site basic theme RGB color.
@@ -32,4 +43,66 @@ export function color(hex: `#${string}`): Rgb {
 	} else {
 		throw new Error(`Invalid input ${hex}`);
 	}
+}
+
+let remoteBlobs: string[] | undefined;
+
+export async function blob(path: string): Promise<Blob> {
+	if (process.env.NO_BLOBS) {
+		return null!;
+	}
+
+	const mimeType = mime.getType(path);
+	if (!mimeType) {
+		throw new Error(`Failed to detect MIME type for ${path}`);
+	}
+	const fileContent = readFileSync(path);
+
+	// prevent infinite recursion
+	process.env.NO_BLOBS = "true";
+	const scuteConfig = await getConfig();
+	process.env.NO_BLOBS = undefined;
+
+	const rpc = new Client({
+		handler: await createSession(scuteConfig.identity),
+	});
+
+	if (!remoteBlobs) {
+		const spin = spinner();
+		spin.start("Fetching remote blobs")
+		const resp = await ok(
+			rpc.call(ComAtprotoSyncListBlobs, {
+				params: {
+					did: scuteConfig.identity,
+					limit: 1000, // if there's more than a thousand...
+				},
+			}),
+		);
+		spin.stop("Fetched remote blobs");
+		remoteBlobs = resp.cids;
+	}
+
+	const ref = CID.toCidLink(await CID.create(0x55, fileContent));
+
+	if (!remoteBlobs.includes(ref.$link)) {
+		const spin = spinner();
+		spin.start(`Uploading ${path}`);
+		await ok(
+			rpc.call(ComAtprotoRepoUploadBlob, {
+				input: fileContent,
+				headers: {
+					"Content-Type": mimeType,
+					"Content-Length": fileContent.byteLength.toString(),
+				},
+			}),
+		);
+		spin.stop(`Uploaded ${path}`);
+	}
+
+	return {
+		$type: "blob",
+		mimeType,
+		size: fileContent.byteLength,
+		ref,
+	};
 }
