@@ -23,7 +23,7 @@ import {
 	SiteStandardDocument,
 	SiteStandardPublication,
 } from "@atcute/standard-site";
-import { cancel, confirm, log, outro, spinner } from "@clack/prompts";
+import { cancel, confirm, log, outro, progress, spinner } from "@clack/prompts";
 import type { AtMarkpubMarkdown, OrgWordpressHtml } from "../lexicons/index.ts";
 import { scuteSchema } from "../schema.ts";
 import type { DataEntry, PublicationConfig } from "../types.ts";
@@ -340,9 +340,15 @@ export async function publish() {
 		cancel("Cancelled");
 		process.exit(1);
 	}
+
+	const prog = progress({ max: queuedOperations.length });
+	prog.start("Updating records...");
 	for (const op of queuedOperations) {
 		await ok(rpc.call(op.type, op.init));
+		prog.advance(1);
 	}
+	prog.stop("Updated records");
+
 	outro("Done!");
 	process.exit(0);
 }
