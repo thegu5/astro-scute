@@ -46,7 +46,9 @@ export const hexToRGB = (hex: string) => {
 
 export async function getConfig(): Promise<ScuteConfig> {
 	return (
-		await import(/* @vite-ignore */ `${join(process.cwd(), "scute.config.ts")}?time=${Date.now()}`)
+		await import(
+			/* @vite-ignore */ `${join(process.cwd(), "scute.config.ts")}?time=${Date.now()}`
+		)
 	).default;
 }
 

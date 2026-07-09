@@ -69,7 +69,7 @@ export async function blob(path: string): Promise<Blob> {
 
 	if (!remoteBlobs) {
 		const spin = spinner();
-		spin.start("Fetching remote blobs")
+		spin.start("Fetching remote blobs");
 		const resp = await ok(
 			rpc.call(ComAtprotoSyncListBlobs, {
 				params: {
