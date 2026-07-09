@@ -2,12 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
-import type { ScuteConfig } from "./types.ts";
 import { buildPublicationUri, getConfig } from "./util.ts";
-
-export function defineConfig(options: ScuteConfig): ScuteConfig {
-	return options;
-}
 
 const createPlugin = (_options?: object): AstroIntegration => {
 	return {
@@ -42,6 +37,7 @@ const createPlugin = (_options?: object): AstroIntegration => {
 	};
 };
 
+export * from "./config.ts";
 export { scuteSchema } from "./schema.ts";
 
 export default createPlugin;
