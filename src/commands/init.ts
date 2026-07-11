@@ -161,7 +161,6 @@ export async function init() {
 				$type: "site.standard.publication",
 				name,
 				url: pubUrl.toString().replace(/\/$/, "") as `${string}:${string}`,
-				description: "A description! (optional)",
 				preferences: {
 					showInDiscover: true,
 				},
