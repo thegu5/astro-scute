@@ -1,11 +1,11 @@
-import type { CollectionKey } from "astro:content";
+import type { CollectionEntry, CollectionKey } from "astro:content";
 import type { Did } from "@atcute/lexicons/syntax";
 import type { SiteStandardPublication } from "@atcute/standard-site";
 import type { MarkdownHeading } from "astro";
 
-export type PublicationConfig = {
+export type PublicationConfig<C extends CollectionKey = CollectionKey> = {
 	/** Name of the associated content collection */
-	collectionName: CollectionKey;
+	collectionName: C;
 
 	/** Unique timestamp ID for the collection. You can generate one with `pnpm scute generate-tid`. */
 	tid: string;
@@ -18,7 +18,13 @@ export type PublicationConfig = {
 	 * 	url: https:/​/gu5.org
 	 * 	baseContentPath: "/blog"
 	 */
-	baseContentPath?: string | undefined;
+	baseContentPath?: string;
+
+	/**
+	 * The frontmatter property that contains the cover image for the document
+	 */
+	//@ts-expect-error The typing here is correct when in a normal astro project
+	coverImageProp?: keyof CollectionEntry<C>["data"];
 
 	/**
 	 * Type of content embedded into document records. `null` doesn't include any.

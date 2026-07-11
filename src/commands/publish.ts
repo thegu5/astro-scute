@@ -1,3 +1,4 @@
+import { dirname, join } from "node:path";
 import { isDeepStrictEqual, styleText } from "node:util";
 import type { SatteriMarkdownProcessorOptions } from "@astrojs/markdown-satteri";
 import {
@@ -24,6 +25,7 @@ import {
 	SiteStandardPublication,
 } from "@atcute/standard-site";
 import { cancel, confirm, log, outro, progress, spinner } from "@clack/prompts";
+import { blob } from "../config.ts";
 import type { AtMarkpubMarkdown, OrgWordpressHtml } from "../lexicons/index.ts";
 import { scuteSchema } from "../schema.ts";
 import type { DataEntry, PublicationConfig } from "../types.ts";
@@ -117,7 +119,7 @@ async function makeSiteStandardDocument(
 		throw new Error(`${entry.id} must have either have pubDate or publishedAt`);
 	}
 
-	return {
+	const doc = {
 		$type: "site.standard.document",
 		title: frontmatter.title,
 		description: frontmatter.description,
@@ -127,8 +129,24 @@ async function makeSiteStandardDocument(
 		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
 		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
 		content: content as any,
-		// todo: bskyPostRef, coverImage...
+		...(entry.data[publication.coverImageProp as string]
+			? {
+					coverImage: await blob(
+						join(
+							process.cwd(),
+							dirname(entry.filePath!),
+							(
+								entry.data[publication.coverImageProp as string] as string
+							).replace("__ASTRO_IMAGE_", ""),
+						),
+					),
+				}
+			: {}),
+		// todo: bskyPostRef, ...
 	} satisfies SiteStandardDocument.Main;
+
+	// sanity check
+	return parse(SiteStandardDocument.mainSchema, doc);
 }
 
 export async function publish() {
@@ -333,13 +351,13 @@ export async function publish() {
 	log.info(summaryMessage);
 
 	if (!process.env.CI) {
-	const confirmed = await confirm({
-		message: "Do you want to continue?",
-	});
-	cancelIfNeeded(confirmed);
-	if (!confirmed) {
-		cancel("Cancelled");
-		process.exit(1);
+		const confirmed = await confirm({
+			message: "Do you want to continue?",
+		});
+		cancelIfNeeded(confirmed);
+		if (!confirmed) {
+			cancel("Cancelled");
+			process.exit(1);
 		}
 	}
 

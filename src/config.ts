@@ -61,7 +61,7 @@ export async function blob(path: string): Promise<Blob> {
 	// prevent infinite recursion
 	process.env.NO_BLOBS = "true";
 	const scuteConfig = await getConfig();
-	process.env.NO_BLOBS = undefined;
+	process.env.NO_BLOBS = "";
 
 	const rpc = new Client({
 		handler: await createSession(scuteConfig.identity),
@@ -103,6 +103,9 @@ export async function blob(path: string): Promise<Blob> {
 		$type: "blob",
 		mimeType,
 		size: fileContent.byteLength,
-		ref,
+		// remake ref so isDeepStrictEqual works
+		ref: {
+			$link: ref.$link,
+		},
 	};
 }
