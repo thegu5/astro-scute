@@ -332,6 +332,7 @@ export async function publish() {
 
 	log.info(summaryMessage);
 
+	if (!process.env.CI) {
 	const confirmed = await confirm({
 		message: "Do you want to continue?",
 	});
@@ -339,6 +340,7 @@ export async function publish() {
 	if (!confirmed) {
 		cancel("Cancelled");
 		process.exit(1);
+		}
 	}
 
 	const prog = progress({ max: queuedOperations.length });
