@@ -155,7 +155,7 @@ export async function init() {
 			// needed since the generated `astro:content` types in this repo don't align with the consumer's
 			collectionName: collectionName as never,
 			tid: createTid(crypto.randomUUID(), new Date()),
-			baseContentPath: pubUrl !== listingUrl ? `/${contentPath}` : undefined,
+			...(pubUrl !== listingUrl ? { baseContentPath: `/${contentPath}` } : {}),
 			contentType,
 			record: {
 				$type: "site.standard.publication",
