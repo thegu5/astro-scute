@@ -149,7 +149,11 @@ async function makeSiteStandardDocument(
 	return parse(SiteStandardDocument.mainSchema, doc);
 }
 
-export async function publish() {
+type PublishCmdOpts = {
+	yes?: boolean
+};
+
+export async function publish(opts?: PublishCmdOpts) {
 	const scuteConfig = await getConfig();
 
 	const dataStore = await getDataStore();
@@ -350,7 +354,7 @@ export async function publish() {
 
 	log.info(summaryMessage);
 
-	if (!process.env.CI) {
+	if (!process.env.CI && !opts?.yes) {
 		const confirmed = await confirm({
 			message: "Do you want to continue?",
 		});
