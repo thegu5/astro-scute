@@ -150,7 +150,7 @@ async function makeSiteStandardDocument(
 }
 
 type PublishCmdOpts = {
-	yes?: boolean
+	yes?: boolean;
 };
 
 export async function publish(opts?: PublishCmdOpts) {
