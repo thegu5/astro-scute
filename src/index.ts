@@ -17,7 +17,11 @@ const createPlugin = (_options?: object): AstroIntegration => {
 				});
 			},
 			"astro:build:done": async ({ dir }) => {
+				// avoid giving the user login prompts when building
+				// (not using blobs here anyways)
+				process.env.NO_BLOBS = "true";
 				const scuteConfig = await getConfig();
+				process.env.NO_BLOBS = "";
 
 				for (const publication of scuteConfig.publications) {
 					const outFile = fileURLToPath(
