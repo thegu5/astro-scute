@@ -25,6 +25,7 @@ import envPaths from "env-paths";
 import { getRandomPort } from "get-port-please";
 import { transformSync, walkSync } from "ultrahtml";
 import sanitize from "ultrahtml/transformers/sanitize";
+import { runInScuteContext } from "./context.ts";
 import type { DataEntry, PublicationConfig, ScuteConfig } from "./types.ts";
 
 export const hexToRGB = (hex: string) => {
@@ -44,12 +45,12 @@ export const hexToRGB = (hex: string) => {
 	return { r, g, b };
 };
 
-export async function getConfig(): Promise<ScuteConfig> {
-	return (
-		await import(
-			/* @vite-ignore */ `${join(process.cwd(), "scute.config.ts")}?time=${Date.now()}`
-		)
-	).default;
+export async function getConfig(includeBlobs = false): Promise<ScuteConfig> {
+	return runInScuteContext({ includeBlobs }, () =>
+		import(`${join(process.cwd(), "scute.config.ts")}?${includeBlobs}`).then(
+			(m) => m.default,
+		),
+	);
 }
 
 export function pidIsRunning(pid: number) {

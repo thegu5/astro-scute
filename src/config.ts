@@ -9,6 +9,7 @@ import type { Blob } from "@atcute/lexicons";
 import type { SiteStandardThemeColor } from "@atcute/standard-site";
 import { spinner } from "@clack/prompts";
 import mime from "mime";
+import { includesBlobs } from "./context.ts";
 import type { ScuteConfig } from "./types.ts";
 import { createSession, getConfig } from "./util.ts";
 
@@ -48,7 +49,7 @@ export function color(hex: `#${string}`): Rgb {
 let remoteBlobs: string[] | undefined;
 
 export async function blob(path: string): Promise<Blob> {
-	if (process.env.NO_BLOBS) {
+	if (!includesBlobs()) {
 		return null!;
 	}
 
@@ -58,10 +59,7 @@ export async function blob(path: string): Promise<Blob> {
 	}
 	const fileContent = readFileSync(path);
 
-	// prevent infinite recursion
-	process.env.NO_BLOBS = "true";
 	const scuteConfig = await getConfig();
-	process.env.NO_BLOBS = "";
 
 	const rpc = new Client({
 		handler: await createSession(scuteConfig.identity),

@@ -154,7 +154,7 @@ type PublishCmdOpts = {
 };
 
 export async function publish(opts?: PublishCmdOpts) {
-	const scuteConfig = await getConfig();
+	const scuteConfig = await getConfig(true);
 
 	const dataStore = await getDataStore();
 
