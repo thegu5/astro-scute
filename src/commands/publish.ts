@@ -88,7 +88,9 @@ async function makeSiteStandardDocument(
 
 	if (publication.contentType === "html") {
 		if (!entry.rendered) {
-			throw new Error(`${entry.id}'s content isn't rendered! Note that the deferRender option for the glob() content loader isn't supported.`);
+			throw new Error(
+				`${entry.id}'s content isn't rendered! Note that the deferRender option for the glob() content loader isn't supported.`,
+			);
 		}
 		content = {
 			$type: "org.wordpress.html",
