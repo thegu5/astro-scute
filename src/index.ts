@@ -8,7 +8,10 @@ const createPlugin = (_options?: object): AstroIntegration => {
 	return {
 		name: "astro-scute",
 		hooks: {
-			"astro:config:setup": async ({ addWatchFile, addMiddleware }) => {
+			"astro:config:setup": async ({ addWatchFile, addMiddleware, config }) => {
+				if (config.experimental.collectionStorage === "chunked") {
+					throw new Error("astro-scute doesn't support chunked content collection data storage")
+				}
 				addWatchFile("./scute.config.ts");
 
 				addMiddleware({
