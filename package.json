@@ -44,14 +44,14 @@
 		"dev": "tsdown --watch",
 		"test": "node --test"
 	},
-	"packageManager": "pnpm@11.9.0",
+	"packageManager": "pnpm@11.17.0",
 	"devDependencies": {
-		"@astrojs/markdown-satteri": "^0.3.4",
+		"@astrojs/markdown-satteri": "^0.3.5",
 		"@atcute/lex-cli": "^3.2.1",
-		"@biomejs/biome": "^2.5.4",
-		"@types/node": "^26.1.1",
-		"tsdown": "^0.22.3",
-		"typescript": "^6.0.3"
+		"@biomejs/biome": "^2.5.6",
+		"@types/node": "^26.1.2",
+		"tsdown": "^0.22.14",
+		"typescript": "^7.0.2"
 	},
 	"dependencies": {
 		"@atcute/atproto": "^4.0.3",
@@ -64,7 +64,7 @@
 		"@atcute/standard-site": "^2.0.2",
 		"@bomb.sh/args": "^0.3.1",
 		"@clack/prompts": "^1.7.0",
-		"devalue": "^5.8.1",
+		"devalue": "^5.8.2",
 		"env-paths": "^4.0.0",
 		"get-port-please": "^3.2.0",
 		"mime": "^4.1.0",
