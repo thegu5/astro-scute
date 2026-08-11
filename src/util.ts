@@ -130,11 +130,22 @@ export async function getDataStore(
 export async function getAstroConfig() {
 	const { validateConfig } = await import("astro/config");
 
-	// todo different file extensions
-	const module = await import(
-		/* @vite-ignore */ join(process.cwd(), "astro.config.ts")
-	);
-	return validateConfig(module.default, process.cwd(), "build"); // uhhhh
+	const configFilePath = [
+		"astro.config.ts",
+		"astro.config.mts",
+		"astro.config.mjs",
+		"astro.config.js",
+	]
+		.map((f) => join(process.cwd(), f))
+		.find(existsSync);
+
+	if (!configFilePath) {
+		throw new Error("Unable to find astro config file");
+	}
+
+	const module = await import(configFilePath);
+
+	return validateConfig(module.default, process.cwd(), "build");
 }
 
 export const actorResolver = new LocalActorResolver({
