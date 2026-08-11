@@ -46,10 +46,8 @@ export const hexToRGB = (hex: string) => {
 	return { r, g, b };
 };
 
-export async function getConfig(includeBlobs = false): Promise<ScuteConfig> {
-	const m = await import(
-		`${join(process.cwd(), "scute.config.ts")}?${includeBlobs}`
-	);
+export async function getConfig(): Promise<ScuteConfig> {
+	const m = await import(join(process.cwd(), "scute.config.ts"));
 	return m.default;
 }
 
