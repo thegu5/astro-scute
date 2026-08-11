@@ -1,17 +1,9 @@
 import { readFileSync } from "node:fs";
-import {
-	ComAtprotoRepoUploadBlob,
-	ComAtprotoSyncListBlobs,
-} from "@atcute/atproto";
 import * as CID from "@atcute/cid";
-import { Client, ok } from "@atcute/client";
 import type { Blob } from "@atcute/lexicons";
 import type { SiteStandardThemeColor } from "@atcute/standard-site";
-import { spinner } from "@clack/prompts";
 import mime from "mime";
-import { includesBlobs } from "./context.ts";
 import type { ScuteConfig } from "./types.ts";
-import { createSession, getConfig } from "./util.ts";
 
 export function defineConfig(options: ScuteConfig): ScuteConfig {
 	return options;
@@ -46,59 +38,25 @@ export function color(hex: `#${string}`): Rgb {
 	}
 }
 
-let remoteBlobs: string[] | undefined;
+export const blobFilePaths = new WeakMap<Blob, string>();
 
+/**
+ * Create a blob reference for a local file, which will automatically be synced during the publishing process.
+ * @param path The path to the file
+ * @returns A blob reference
+ */
 export async function blob(path: string): Promise<Blob> {
-	if (!includesBlobs()) {
-		return null!;
-	}
-
 	const mimeType = mime.getType(path);
 	if (!mimeType) {
 		throw new Error(`Failed to detect MIME type for ${path}`);
 	}
+
 	const fileContent = readFileSync(path);
-
-	const scuteConfig = await getConfig();
-
-	const rpc = new Client({
-		handler: await createSession(scuteConfig.identity),
-	});
-
-	if (!remoteBlobs) {
-		const spin = spinner();
-		spin.start("Fetching remote blobs");
-		const resp = await ok(
-			rpc.call(ComAtprotoSyncListBlobs, {
-				params: {
-					did: scuteConfig.identity,
-					limit: 1000, // if there's more than a thousand...
-				},
-			}),
-		);
-		spin.stop("Fetched remote blobs");
-		remoteBlobs = resp.cids;
-	}
 
 	const ref = CID.toCidLink(await CID.create(0x55, fileContent));
 
-	if (!remoteBlobs.includes(ref.$link)) {
-		const spin = spinner();
-		spin.start(`Uploading ${path}`);
-		await ok(
-			rpc.call(ComAtprotoRepoUploadBlob, {
-				input: fileContent,
-				headers: {
-					"Content-Type": mimeType,
-					"Content-Length": fileContent.byteLength.toString(),
-				},
-			}),
-		);
-		spin.stop(`Uploaded ${path}`);
-	}
-
-	return {
-		$type: "blob",
+	const blob = {
+		$type: "blob" as const,
 		mimeType,
 		size: fileContent.byteLength,
 		// remake ref so isDeepStrictEqual works
@@ -106,4 +64,7 @@ export async function blob(path: string): Promise<Blob> {
 			$link: ref.$link,
 		},
 	};
+	blobFilePaths.set(blob, path);
+
+	return blob;
 }

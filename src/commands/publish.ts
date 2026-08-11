@@ -1,4 +1,5 @@
-import { dirname, join } from "node:path";
+import { readFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { isDeepStrictEqual, styleText } from "node:util";
 import type { SatteriMarkdownProcessorOptions } from "@astrojs/markdown-satteri";
 import {
@@ -6,9 +7,11 @@ import {
 	ComAtprotoRepoDeleteRecord,
 	ComAtprotoRepoListRecords,
 	ComAtprotoRepoPutRecord,
+	ComAtprotoRepoUploadBlob,
 } from "@atcute/atproto";
 import { type CallRequestOptions, Client, ok } from "@atcute/client";
 import {
+	type Blob,
 	type Did,
 	parse,
 	parseResourceUri,
@@ -25,7 +28,7 @@ import {
 	SiteStandardPublication,
 } from "@atcute/standard-site";
 import { cancel, confirm, log, outro, progress, spinner } from "@clack/prompts";
-import { blob } from "../config.ts";
+import { blob, blobFilePaths } from "../config.ts";
 import type { AtMarkpubMarkdown, OrgWordpressHtml } from "../lexicons/index.ts";
 import { scuteSchema } from "../schema.ts";
 import type { DataEntry, PublicationConfig } from "../types.ts";
@@ -38,6 +41,7 @@ import {
 	getConfig,
 	getDataStore,
 	processHtml,
+	remoteBlobs,
 } from "../util.ts";
 
 async function listRecords<
@@ -196,6 +200,28 @@ export async function publish(opts?: PublishCmdOpts) {
 
 	const queuedOperations: Operation[] = [];
 
+	// this function handles checking if a blob needs uploading, and if so, adds it to the operation queue
+	async function processBlob(blob: Blob | undefined) {
+		if (blob && !(await remoteBlobs()).includes(blob?.ref.$link)) {
+			const filePath: string = relative(".", blobFilePaths.get(blob)!);
+
+			if (queuedOperations.find((op) => op.id === filePath)) return;
+
+			const fileContent = readFileSync(filePath);
+			queuedOperations.push({
+				type: ComAtprotoRepoUploadBlob,
+				init: {
+					input: fileContent,
+					headers: {
+						"Content-Type": blob.mimeType,
+						"Content-Length": fileContent.byteLength.toString(),
+					},
+				},
+				id: filePath,
+			});
+		}
+	}
+
 	// make sure site.standard.publication records are up to date
 	for (const publication of scuteConfig.publications) {
 		const rkey = publication.tid;
@@ -218,7 +244,10 @@ export async function publish(opts?: PublishCmdOpts) {
 			} satisfies CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema> satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
 			id: publication.collectionName,
 		});
+
+		await processBlob(publication.record.icon as Blob);
 	}
+
 	// make sure site.standard.document records are up to date
 	for (const publication of scuteConfig.publications) {
 		const pubUri = buildPublicationUri(scuteConfig.identity, publication);
@@ -293,6 +322,8 @@ export async function publish(opts?: PublishCmdOpts) {
 				} satisfies CallRequestOptions<ComAtprotoRepoCreateRecord.mainSchema>,
 				id: localInfo.entry.id,
 			});
+
+			await processBlob(localInfo.document.coverImage as Blob);
 		}
 
 		// these documents exist in both the content collection, as well as the user's PDS
@@ -324,6 +355,8 @@ export async function publish(opts?: PublishCmdOpts) {
 				} satisfies CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>,
 				id: localInfo.entry.id,
 			});
+
+			await processBlob(localInfo.document.coverImage as Blob);
 		}
 	}
 
@@ -343,15 +376,17 @@ export async function publish(opts?: PublishCmdOpts) {
 			summaryMessage += styleText("yellow", "updating ");
 		} else if (op.type === ComAtprotoRepoDeleteRecord) {
 			summaryMessage += styleText("red", "deleting ");
-			log.warning(
-				`deleting ${(op.init as CallRequestOptions<ComAtprotoRepoDeleteRecord.mainSchema>).input.rkey}`,
-			);
+		} else if (op.type === ComAtprotoRepoUploadBlob) {
+			summaryMessage += styleText("blue", "uploading ");
 		}
 		summaryMessage += op.id;
-		summaryMessage += styleText(
-			"dim",
-			` (${(op.init as CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>).input.rkey})\n`,
-		);
+		if (op.init.input && Object.hasOwn(op.init.input, "rkey")) {
+			summaryMessage += styleText(
+				"dim",
+				` (${(op.init as CallRequestOptions<ComAtprotoRepoPutRecord.mainSchema>).input.rkey})`,
+			);
+		}
+		summaryMessage += "\n";
 	});
 
 	log.info(summaryMessage);

@@ -2,6 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { join } from "node:path";
+import { ComAtprotoSyncListBlobs } from "@atcute/atproto";
+import { Client, ok } from "@atcute/client";
 import {
 	CompositeDidDocumentResolver,
 	CompositeHandleResolver,
@@ -25,7 +27,6 @@ import envPaths from "env-paths";
 import { getRandomPort } from "get-port-please";
 import { transformSync, walkSync } from "ultrahtml";
 import sanitize from "ultrahtml/transformers/sanitize";
-import { runInScuteContext } from "./context.ts";
 import type { DataEntry, PublicationConfig, ScuteConfig } from "./types.ts";
 
 export const hexToRGB = (hex: string) => {
@@ -46,11 +47,10 @@ export const hexToRGB = (hex: string) => {
 };
 
 export async function getConfig(includeBlobs = false): Promise<ScuteConfig> {
-	return runInScuteContext({ includeBlobs }, () =>
-		import(`${join(process.cwd(), "scute.config.ts")}?${includeBlobs}`).then(
-			(m) => m.default,
-		),
+	const m = await import(
+		`${join(process.cwd(), "scute.config.ts")}?${includeBlobs}`
 	);
+	return m.default;
 }
 
 export function pidIsRunning(pid: number) {
@@ -60,6 +60,33 @@ export function pidIsRunning(pid: number) {
 	} catch {
 		return false;
 	}
+}
+
+let _remoteBlobs: string[] | undefined;
+
+export async function remoteBlobs() {
+	if (_remoteBlobs) return _remoteBlobs;
+	const scuteConfig = await getConfig();
+
+	const rpc = new Client({
+		handler: await createSession(scuteConfig.identity),
+	});
+
+	const spin = spinner();
+	spin.start("Fetching remote blobs");
+	const resp = await ok(
+		rpc.call(ComAtprotoSyncListBlobs, {
+			params: {
+				did: scuteConfig.identity,
+				limit: 1000, // if there's more than a thousand...
+			},
+		}),
+	);
+	spin.stop("Fetched remote blobs");
+
+	_remoteBlobs = resp.cids;
+
+	return _remoteBlobs;
 }
 
 type LockFileData = {
