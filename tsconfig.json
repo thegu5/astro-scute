@@ -1,11 +1,21 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"rootDir": "src",
+		"outDir": "dist",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": false,
+		"rewriteRelativeImportExtensions": true,
+		"noEmit": false,
 		"skipLibCheck": true,
 		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": true,
 		"noImplicitOverride": true,
 		"useUnknownInCatchVariables": true,
 		"types": ["node", "@atcute/standard-site", "@atcute/atproto"]
-	}
+	},
+	"include": ["src", ".astro/types.d.ts"]
 }
