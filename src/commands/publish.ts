@@ -125,16 +125,13 @@ async function makeSiteStandardDocument(
 		throw new Error(`${entry.id} must have either have pubDate or publishedAt`);
 	}
 
-	const doc = {
+	const doc: SiteStandardDocument.Main = {
 		$type: "site.standard.document",
+		site: buildPublicationUri(scuteConfig.identity, publication),
+		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
 		title: frontmatter.title,
 		description: frontmatter.description,
-		tags: frontmatter.categories ?? frontmatter.tags,
-		site: buildPublicationUri(scuteConfig.identity, publication),
-		publishedAt: publishedAt.toISOString(),
-		path: `${publication.baseContentPath ?? ""}/${entry.id}`,
-		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
-		content: content as any,
+		// coverImage
 		...(entry.data[publication.coverImageProp as string]
 			? {
 					coverImage: await blob(
@@ -148,8 +145,16 @@ async function makeSiteStandardDocument(
 					),
 				}
 			: {}),
-		// todo: bskyPostRef, ...
-	} satisfies SiteStandardDocument.Main;
+		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
+		content: content as any,
+		// bskyPostRef
+		tags: frontmatter.categories ?? frontmatter.tags,
+		// links
+		// labels
+		// contributors
+		publishedAt: publishedAt.toISOString(),
+		// updatedAt
+	};
 
 	// sanity check
 	return parse(SiteStandardDocument.mainSchema, doc);
