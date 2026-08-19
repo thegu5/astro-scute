@@ -45,12 +45,13 @@
 		"check": "tsc --noEmit && tsc -p test",
 		"test": "node --test"
 	},
-	"packageManager": "pnpm@11.21.0",
+	"packageManager": "pnpm@11.22.0",
 	"devDependencies": {
-		"@astrojs/markdown-satteri": "^0.3.5",
+		"@astrojs/markdown-satteri": "^0.3.6",
 		"@atcute/lex-cli": "^3.2.1",
-		"@biomejs/biome": "^2.5.8",
+		"@biomejs/biome": "^2.5.9",
 		"@types/node": "^26.2.0",
+		"astro": "^7.2.3",
 		"typescript": "^7.0.2"
 	},
 	"dependencies": {
