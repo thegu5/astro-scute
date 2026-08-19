@@ -27,4 +27,6 @@ jobs:
       - name: Run Biome
         run: pnpm biome ci
       - name: Check types
-        run: pnpm tsc
+        run: pnpm check
+      - name: Run Tests
+        run: pnpm test

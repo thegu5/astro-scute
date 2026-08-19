@@ -47,7 +47,9 @@ export const hexToRGB = (hex: string) => {
 };
 
 export async function getConfig(): Promise<ScuteConfig> {
-	const m = await import(join(process.cwd(), "scute.config.ts"));
+	const m = await import(
+		/* @vite-ignore */ join(process.cwd(), "scute.config.ts")
+	);
 	return m.default;
 }
 
@@ -141,7 +143,7 @@ export async function getAstroConfig() {
 		throw new Error("Unable to find astro config file");
 	}
 
-	const module = await import(configFilePath);
+	const module = await import(/* @vite-ignore */ configFilePath);
 
 	return validateConfig(module.default, process.cwd(), "build");
 }

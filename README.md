@@ -24,9 +24,9 @@ import { scuteSchema } from "astro-scute";
 
 const blog = defineCollection({
   // ...
-  schema: z.object({
-    // your props go here
-  }).safeExtend(scuteSchema.shape),
+  schema: scuteSchema.extend({
+    // your props here...
+  })
 });
 ```
 
@@ -44,6 +44,7 @@ Make sure to run `pnpm astro sync` to generate types for astro's virtual modules
   - [x] some HTML lexicon
 - [x] app password support (especially helpful for CI)
 - [x] be spec-compliant
+- [ ] remaining Standard.site data (updatedAt, etc)
 - [ ] documentation
   - [ ] 'blessed' frontmatter properties
   - [ ] asciinema recording

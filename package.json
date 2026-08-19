@@ -39,9 +39,10 @@
 		"README.md"
 	],
 	"scripts": {
+		"dev": "tsc --watch",
 		"build": "tsc",
 		"prepack": "pnpm build",
-		"dev": "tsc --watch",
+		"check": "tsc --noEmit && tsc -p test",
 		"test": "node --test"
 	},
 	"packageManager": "pnpm@11.21.0",
