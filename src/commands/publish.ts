@@ -148,7 +148,7 @@ async function makeSiteStandardDocument(
 		// biome-ignore lint/suspicious/noExplicitAny: atcute bug? typing is wrong here
 		content: content as any,
 		// bskyPostRef
-		tags: frontmatter.categories ?? frontmatter.tags,
+		tags: frontmatter.tags ?? frontmatter.categories,
 		// links
 		// labels
 		// contributors
