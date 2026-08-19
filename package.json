@@ -40,7 +40,7 @@
 	],
 	"scripts": {
 		"dev": "tsc --watch",
-		"build": "tsc",
+		"build": "astro sync && tsc",
 		"prepack": "pnpm build",
 		"check": "tsc --noEmit && tsc -p test",
 		"test": "node --test"
