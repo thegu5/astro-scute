@@ -150,7 +150,16 @@ async function makeSiteStandardDocument(
 		// bskyPostRef
 		tags: frontmatter.tags ?? frontmatter.categories,
 		// links
-		// labels
+		...(frontmatter.labels
+			? {
+					labels: {
+						$type: "com.atproto.label.defs#selfLabels",
+						values: frontmatter.labels.map((val) => ({
+							val,
+						})),
+					},
+				}
+			: {}),
 		// contributors
 		publishedAt: publishedAt.toISOString(),
 		// updatedAt

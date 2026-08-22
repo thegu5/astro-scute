@@ -18,6 +18,8 @@ export const scuteSchema = z.object({
 
 	categories: z.array(z.string()).optional(),
 	tags: z.array(z.string()).optional(),
+
+	labels: z.optional(z.array(z.string().max(128)).max(10)),
 });
 
 export async function addScuteSchema(
