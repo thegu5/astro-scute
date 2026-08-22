@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import * as CID from "@atcute/cid";
 import type { Blob } from "@atcute/lexicons";
 import type { SiteStandardThemeColor } from "@atcute/standard-site";
-import mime from "mime";
+import { lookup } from "mrmime";
 import type { ScuteConfig } from "./types.ts";
 
 export function defineConfig(options: ScuteConfig): ScuteConfig {
@@ -46,7 +46,7 @@ export const blobFilePaths = new WeakMap<Blob, string>();
  * @returns A blob reference
  */
 export async function blob(path: string): Promise<Blob> {
-	const mimeType = mime.getType(path);
+	const mimeType = lookup(path);
 	if (!mimeType) {
 		throw new Error(`Failed to detect MIME type for ${path}`);
 	}

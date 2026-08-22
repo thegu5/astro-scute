@@ -68,7 +68,7 @@
 		"devalue": "^5.9.1",
 		"env-paths": "^4.0.0",
 		"get-port-please": "^3.2.0",
-		"mime": "^4.1.0",
+		"mrmime": "^2.0.1",
 		"ts-morph": "^28.0.0",
 		"ultrahtml": "^1.7.0"
 	},
