@@ -19,14 +19,20 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 
 		const contentBasePath = `${pubPath.slice(0, -1)}${publication.baseContentPath ?? ""}/`;
 
+		const publicationUri = buildPublicationUri(scuteConfig.identity, publication);
+
 		if (reqPath === pubPath) {
 			const response = await next();
 			const ast = parse(await response.text());
 			querySelector(ast, "head").children.push(
 				h("link", {
 					rel: "site.standard.publication",
-					href: buildPublicationUri(scuteConfig.identity, publication),
+					href: publicationUri,
 				}),
+				h("meta", {
+					name: "at:canonical",
+					content: publicationUri
+				})
 			);
 
 			return new Response(renderSync(ast), response);
@@ -54,11 +60,21 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 				);
 			}
 
+			const documentUri = `at://${scuteConfig.identity}/site.standard.document/${createTid(`${publication.collectionName}-${entry.id}`, publishedAt)}`;
+
 			querySelector(ast, "head").children.push(
 				h("link", {
 					rel: "site.standard.document",
-					href: `at://${scuteConfig.identity}/site.standard.document/${createTid(`${publication.collectionName}-${entry.id}`, publishedAt)}`,
+					href: documentUri,
 				}),
+				h("meta", {
+					name: "at:canonical",
+					content: documentUri
+				}),
+				h("meta", {
+					name: "at:alternate",
+					content: publicationUri
+				})
 			);
 
 			return new Response(renderSync(ast), response);
