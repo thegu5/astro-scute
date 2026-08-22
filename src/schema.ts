@@ -1,5 +1,6 @@
 import { z } from "astro/zod";
 import type { CallExpression, SourceFile } from "ts-morph";
+import { maxGraphemes } from "./util.ts";
 
 // see https://github.com/withastro/astro/blob/675d11d0859478f0a31132e2ca1371b1afe5651d/packages/astro-rss/src/schema.ts#L6
 const dateSchema = z
@@ -17,9 +18,20 @@ export const scuteSchema = z.object({
 	publishedAt: dateSchema.optional(),
 
 	categories: z.array(z.string()).optional(),
+
 	tags: z.array(z.string()).optional(),
 
 	labels: z.optional(z.array(z.string().max(128)).max(10)),
+
+	contributors: z.optional(
+		z.array(
+			z.object({
+				did: z.templateLiteral(["did:", z.string(), ":", z.string()]),
+				role: z.optional(z.string().check(maxGraphemes(100)).max(1000)),
+				displayName: z.string().check(maxGraphemes(100)).max(1000),
+			}),
+		),
+	),
 });
 
 export async function addScuteSchema(

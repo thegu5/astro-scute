@@ -22,6 +22,7 @@ import {
 } from "@atcute/oauth-node-client";
 import { PasswordSession } from "@atcute/password-session";
 import { cancel, isCancel, log, spinner } from "@clack/prompts";
+import type { core } from "astro/zod";
 import * as devalue from "devalue";
 import envPaths from "env-paths";
 import { getRandomPort } from "get-port-please";
@@ -383,4 +384,40 @@ function encodeTid(n: bigint) {
 		n >>= 5n;
 	}
 	return result;
+}
+
+const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+// https://github.com/colinhacks/zod/issues/3355#issuecomment-3013170046
+export function graphemeCount(input: string, stopAt = Infinity): number {
+	if (stopAt < 1) {
+		return 0;
+	}
+
+	let count = 0;
+	/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+	for (const _segment of segmenter.segment(input)) {
+		if (++count >= stopAt) {
+			break;
+		}
+	}
+
+	return count;
+}
+
+export function maxGraphemes(max: number): core.CheckFn<string> {
+	return (context) => {
+		const count = graphemeCount(context.value, max + 1);
+		if (count <= max) {
+			return;
+		}
+
+		context.issues.push({
+			origin: "string",
+			code: "too_big",
+			maximum: max,
+			inclusive: true,
+			input: context.value,
+		});
+	};
 }

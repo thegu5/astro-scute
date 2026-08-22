@@ -160,7 +160,11 @@ async function makeSiteStandardDocument(
 					},
 				}
 			: {}),
-		// contributors
+		...(frontmatter.contributors
+			? {
+					contributors: frontmatter.contributors,
+				}
+			: {}),
 		publishedAt: publishedAt.toISOString(),
 		// updatedAt
 	};
