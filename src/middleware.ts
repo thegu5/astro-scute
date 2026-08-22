@@ -19,7 +19,10 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 
 		const contentBasePath = `${pubPath.slice(0, -1)}${publication.baseContentPath ?? ""}/`;
 
-		const publicationUri = buildPublicationUri(scuteConfig.identity, publication);
+		const publicationUri = buildPublicationUri(
+			scuteConfig.identity,
+			publication,
+		);
 
 		if (reqPath === pubPath) {
 			const response = await next();
@@ -31,8 +34,8 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 				}),
 				h("meta", {
 					name: "at:canonical",
-					content: publicationUri
-				})
+					content: publicationUri,
+				}),
 			);
 
 			return new Response(renderSync(ast), response);
@@ -69,12 +72,12 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 				}),
 				h("meta", {
 					name: "at:canonical",
-					content: documentUri
+					content: documentUri,
 				}),
 				h("meta", {
 					name: "at:alternate",
-					content: publicationUri
-				})
+					content: publicationUri,
+				}),
 			);
 
 			return new Response(renderSync(ast), response);
