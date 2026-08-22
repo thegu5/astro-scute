@@ -1,6 +1,6 @@
 # astro-scute
 
-astro-scute is an Astro integration that makes it easy to publish [Standard.site](https://standard.site) records for your content collections, with minimal configuration and no scripting.
+astro-scute is an Astro integration that makes it easy to publish [Standard.site](https://standard.site) records for your content collections, with minimal configuration and no scripting. It was the subject of a talk I did at [atproto nyc](https://atproto.nyc) in July 2026 ([recording](https://www.youtube.com/watch?v=soJu6Q3KXBI)).
 
 ## Getting Started
 First, install and add the integration:
