@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { parse } from "@bomb.sh/args";
 import { init } from "./commands/init.ts";
 import { publish } from "./commands/publish.ts";
