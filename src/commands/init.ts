@@ -9,6 +9,7 @@ import {
 } from "@atcute/lexicons/syntax";
 import { SiteStandardPublication } from "@atcute/standard-site";
 import {
+	type CANCEL_SYMBOL,
 	cancel,
 	intro,
 	log,
@@ -55,7 +56,7 @@ export async function init() {
 				return "Please enter a valid identifier (handle or DID)";
 			}
 		},
-	})) as ActorIdentifier | symbol;
+	})) as ActorIdentifier | typeof CANCEL_SYMBOL;
 	cancelIfNeeded(actor);
 
 	if (isHandle(actor)) {

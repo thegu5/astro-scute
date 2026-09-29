@@ -21,7 +21,13 @@ import {
 	type StoredState,
 } from "@atcute/oauth-node-client";
 import { PasswordSession } from "@atcute/password-session";
-import { cancel, isCancel, log, spinner } from "@clack/prompts";
+import {
+	type CANCEL_SYMBOL,
+	cancel,
+	isCancel,
+	log,
+	spinner,
+} from "@clack/prompts";
 import type { core } from "astro/zod";
 import * as devalue from "devalue";
 import envPaths from "env-paths";
@@ -311,7 +317,9 @@ export class DiskStore<K extends string, V> implements Store<K, V> {
 	}
 }
 
-export function cancelIfNeeded<T>(val: T | symbol): asserts val is T {
+export function cancelIfNeeded<T>(
+	val: T | typeof CANCEL_SYMBOL,
+): asserts val is T {
 	if (isCancel(val)) {
 		cancel("Operation cancelled.");
 		process.exit(1);
