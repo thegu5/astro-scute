@@ -38,8 +38,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 					name: "at:canonical",
 					content: publicationUri,
 				}),
-			);
+      );
 
+      response.headers.delete("content-length")
 			return new Response(renderSync(ast), response);
 		} else if (
 			reqPath.startsWith(contentBasePath) &&
@@ -79,8 +80,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 					name: "at:alternate",
 					content: publicationUri,
 				}),
-			);
+      );
 
+      response.headers.delete("content-length")
 			return new Response(renderSync(ast), response);
 		}
 	}
