@@ -51,17 +51,26 @@ async function listRecords<
 >(rpc: Client, did: Did, lex: TSchema) {
 	const nsid = lex.object.shape.$type.expected;
 
-	const response = await ok(
-		rpc.call(ComAtprotoRepoListRecords, {
-			params: {
-				collection: nsid,
-				repo: did,
-			},
-		}),
-	);
+	const records: ComAtprotoRepoListRecords.Record[] = [];
+	let cursor: string | undefined;
+
+	do {
+		const response = await ok(
+			rpc.call(ComAtprotoRepoListRecords, {
+				params: {
+					collection: nsid,
+					repo: did,
+					limit: 100,
+					cursor,
+				},
+			}),
+		);
+		records.push(...response.records);
+		cursor = response.cursor;
+	} while (cursor);
 
 	return new Map(
-		response.records.flatMap((record) => {
+		records.flatMap((record) => {
 			try {
 				return [[parseResourceUri(record.uri).rkey!, parse(lex, record.value)]];
 			} catch (e) {

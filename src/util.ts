@@ -65,17 +65,24 @@ export async function remoteBlobs() {
 
 	const spin = spinner();
 	spin.start("Fetching remote blobs");
-	const resp = await ok(
-		rpc.call(ComAtprotoSyncListBlobs, {
-			params: {
-				did: scuteConfig.identity,
-				limit: 1000, // if there's more than a thousand...
-			},
-		}),
-	);
+	const cids: string[] = [];
+	let cursor: string | undefined;
+	do {
+		const resp = await ok(
+			rpc.call(ComAtprotoSyncListBlobs, {
+				params: {
+					did: scuteConfig.identity,
+					limit: 1000,
+					cursor,
+				},
+			}),
+		);
+		cids.push(...resp.cids);
+		cursor = resp.cursor;
+	} while (cursor);
 	spin.stop("Fetched remote blobs");
 
-	_remoteBlobs = resp.cids;
+	_remoteBlobs = cids;
 
 	return _remoteBlobs;
 }
