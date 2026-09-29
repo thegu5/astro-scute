@@ -38,9 +38,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 					name: "at:canonical",
 					content: publicationUri,
 				}),
-      );
+			);
 
-      response.headers.delete("content-length")
+			response.headers.delete("content-length");
 			return new Response(renderSync(ast), response);
 		} else if (
 			reqPath.startsWith(contentBasePath) &&
@@ -56,8 +56,15 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 				.filter((p) => p)
 				.at(-1)!;
 
-			const entry = dataStore.get(publication.collectionName)!.get(rkey)!;
-			const frontmatter = scuteSchema.parse(entry?.data);
+			const entry = dataStore.get(publication.collectionName)?.get(rkey);
+			if (!entry) {
+				ctx.logger.warn(
+					`${reqPath} is under ${contentBasePath}, but isn't in a content collection`,
+				);
+				return next();
+			}
+
+			const frontmatter = scuteSchema.parse(entry.data);
 			const publishedAt = frontmatter.publishedAt ?? frontmatter.pubDate;
 			if (!publishedAt) {
 				throw new Error(
@@ -80,9 +87,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 					name: "at:alternate",
 					content: publicationUri,
 				}),
-      );
+			);
 
-      response.headers.delete("content-length")
+			response.headers.delete("content-length");
 			return new Response(renderSync(ast), response);
 		}
 	}
