@@ -21,4 +21,7 @@ if (subCommand === "init") {
 	await createSession((await getConfig()).identity);
 } else if (subCommand === "generate-tid") {
 	console.log(createTid(crypto.randomUUID(), new Date()));
+} else {
+	console.error(`Command not found: ${subCommand}`);
+	process.exit(1);
 }
