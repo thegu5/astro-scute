@@ -36,23 +36,6 @@ import { transformSync, walkSync } from "ultrahtml";
 import sanitize from "ultrahtml/transformers/sanitize";
 import type { DataEntry, PublicationConfig, ScuteConfig } from "./types.ts";
 
-export const hexToRGB = (hex: string) => {
-	let parseString = hex;
-	if (hex.startsWith("#")) {
-		parseString = hex.slice(1, 7);
-	}
-	if (parseString.length !== 6) {
-		return null;
-	}
-	const r = parseInt(parseString.slice(0, 2), 16);
-	const g = parseInt(parseString.slice(2, 4), 16);
-	const b = parseInt(parseString.slice(4, 6), 16);
-	if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-		return null;
-	}
-	return { r, g, b };
-};
-
 export async function getConfig(): Promise<ScuteConfig> {
 	const m = await import(
 		/* @vite-ignore */ join(process.cwd(), "scute.config.ts")
