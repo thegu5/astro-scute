@@ -9,6 +9,8 @@ import {
 	getDataStore,
 } from "./util.ts";
 
+const dataStore = await getDataStore(true);
+
 export const onRequest = defineMiddleware(async (ctx, next) => {
 	const scuteConfig = await getConfig();
 
@@ -53,7 +55,6 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 				.filter((p) => p)
 				.at(-1)!;
 
-			const dataStore = await getDataStore(true);
 			const entry = dataStore.get(publication.collectionName)!.get(rkey)!;
 			const frontmatter = scuteSchema.parse(entry?.data);
 			const publishedAt = frontmatter.publishedAt ?? frontmatter.pubDate;
