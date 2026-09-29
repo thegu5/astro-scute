@@ -1,5 +1,5 @@
 import { existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 import {
@@ -107,9 +107,9 @@ export async function init() {
 		});
 		cancelIfNeeded(name);
 
-		const srcDir = fileURLToPath(astroConfig.srcDir)
-			.replace(`${process.cwd()}/`, "")
-			.slice(0, -1);
+		const srcDir = relative(process.cwd(), fileURLToPath(astroConfig.srcDir))
+			.split(sep)
+			.join("/");
 
 		let contentPath = await path({
 			message:
